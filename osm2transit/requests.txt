@@ -1,0 +1,8 @@
+<trolleybus>
+http://overpass-api.de/api/interpreter?data=relation(49.7422316,23.8623047,49.9529871,24.2056274)[route=trolleybus];out meta;
+
+<tramway>
+http://overpass-api.de/api/interpreter?data=relation(49.7422316,23.8623047,49.9529871,24.2056274)[route=tramway];out meta;
+
+<bus>
+http://overpass-api.de/api/interpreter?data=relation(49.7422316,23.8623047,49.9529871,24.2056274)[route=bus];out meta;

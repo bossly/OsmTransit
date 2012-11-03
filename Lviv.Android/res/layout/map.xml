@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
+
+    <!-- main screen -->
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="0dip"
+        android:layout_weight="1" >
+
+        <org.mapsforge.android.maps.MapView
+            android:id="@+id/mapView"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent" />
+
+        <ImageView
+            android:layout_width="15dip"
+            android:layout_height="15dip"
+            android:layout_centerInParent="true"
+            android:background="@drawable/ic_stat_centr"
+            android:scaleType="fitCenter" />
+
+        <LinearLayout
+            android:id="@+id/bottom_panel"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:visibility="gone" >
+
+            <Button
+                android:id="@+id/btn_start"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:drawableLeft="@drawable/ic_stat_a"
+                android:text="@string/button_direction_from" />
+
+            <ImageButton
+                android:id="@+id/btn_current"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:src="@drawable/ic_stat_center" />
+
+            <Button
+                android:id="@+id/btn_end"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:drawableLeft="@drawable/ic_stat_b"
+                android:text="@string/button_direction_to" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="50dip"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:orientation="vertical" >
+
+            <Button
+                android:id="@+id/btn_plus"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="+" />
+
+            <Button
+                android:id="@+id/btn_minus"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="-" />
+        </LinearLayout>
+
+        <!-- Loading indicator -->
+
+        <Button
+            android:id="@+id/btnRoute"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:background="#a333"
+            android:gravity="center"
+            android:padding="5dip"
+            android:text="Карта лише для перегляду"
+            android:textColor="#fff" />
+
+        <ImageButton
+            android:id="@+id/btnNotifyMe"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/bottom_panel"
+            android:layout_alignParentRight="true"
+            android:layout_margin="5dip"
+            android:padding="5dip"
+            android:src="@android:drawable/ic_dialog_info" />
+    </RelativeLayout>
+
+    <HorizontalScrollView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" >
+
+        <RadioGroup
+            android:id="@+id/routes"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal" >
+
+            <include
+                layout="@layout/radio_route"
+                android:visibility="gone" />
+        </RadioGroup>
+    </HorizontalScrollView>
+
+</LinearLayout>

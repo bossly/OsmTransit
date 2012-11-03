@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" >
+
+    <include
+        android:id="@+id/container"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        layout="@layout/inc_near_screen" />
+
+    <!-- Loading indicator -->
+
+    <RelativeLayout
+        android:id="@+id/location_determine"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:background="#000" >
+
+        <LinearLayout
+            android:padding="20dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:layout_centerInParent="true" >
+
+            <ProgressBar
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:indeterminate="true" />
+            
+            <TextView
+                android:id="@+id/text_loading"
+                android:layout_marginLeft="10dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/location_determine" />
+            
+        </LinearLayout>
+        
+    </RelativeLayout>
+
+</RelativeLayout>

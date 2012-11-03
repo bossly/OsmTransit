@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Транспорт</string>
+    <string name="no_data">Немає даних</string>
+    <string name="agree">Погоджуюсь</string>
+    <string name="disagree">Не погоджуюсь</string>
+    <string name="update_available_title">Доступні оновлення</string>
+    <string name="update_available_msg">Нові дані про маршрути доступні в мережі. Завантажити зміни?\n(Розмір даних: ~60Кб  )</string>
+    <string name="data_updated">Маршрути оновлено</string>
+    <string name="location_determine">Зачекайте поки визначається ваше місцезнаходження</string>
+    <string name="report_problem_title">Опишіть помилку</string>
+    <string name="report_problem_added">Дякую за допомогу!</string>
+    <string name="dlg_location_title">Налаштування місцезнаходження</string>
+    <string name="dlg_location_message">Увімкніть GPS в налаштуваннях, щоб покращити точність визначення вашого місцезнаходження</string>
+    <string name="dlg_settings">Налаштування</string>
+    <string name="lbl_searching">Пошук…</string>
+    <string name="menu_routes_near">Маршрути поблизу</string>
+    <string name="menu_routes_all">Всі маршрути</string>
+    <string name="menu_map">Карта (beta)</string>
+    <string name="menu_settings">Налаштування</string>
+    <string name="filter_hint">наукова центр ашан …</string>
+    <string name="button_direction_to">До</string>
+    <string name="button_direction_from">Від</string>
+
+    <!-- preference -->
+
+    <string name="pref_check_summary">Провіряти оновлення з мережі при запуску програми</string>
+    <string name="pref_check_title">Провіряти оновлення</string>
+    <string name="pref_autoupdate_summary">Оновлювати маршрути автоматично</string>
+    <string name="pref_autoupdate_title">Оновлення</string>
+    <string name="pref_report_summary">Повідомлення про помилки будуть відсилатися при запуску програми</string>
+    <string name="pref_report_title">Відправляти описи помилок</string>
+    <string name="pref_license_summary">Переглядути ліцензійну угоду</string>
+    <string name="pref_license_title">Ліцензія</string>
+    <string name="pref_general">Основне</string>
+    <string name="srv_warning_title">Попередження за 500м від (В) вкл.</string>
+    <string name="srv_warning_msg">Натисніть, щоб вимкнути</string>
+    <string name="srv_warning_exit_title">Пригодуйтеся виходити</string>
+    <string name="srv_warning_exit_msg">Натисніть, щоб видалити повідомлення</string>
+    <string name="authors">Автори:\nОлег Байдалка ( допомагала Олександра Чучко )</string>
+    
+</resources>
