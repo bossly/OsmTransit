@@ -37,7 +37,7 @@ public class DashboardActivity extends android.support.v4.app.FragmentActivity
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		
+
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 
@@ -49,11 +49,9 @@ public class DashboardActivity extends android.support.v4.app.FragmentActivity
 		m_loading = findViewById(R.id.loading);
 
 		findViewById(R.id.button1).setOnClickListener(this);
-		findViewById(R.id.button2).setOnClickListener(this);
 		findViewById(R.id.button3).setOnClickListener(this);
 		findViewById(R.id.button4).setOnClickListener(this);
-		// findViewById( R.id.button5 ).setOnClickListener( this
-		// );
+		findViewById(R.id.button5).setOnClickListener(this);
 
 		Intent intent = getIntent();
 		Bundle extras = intent.getExtras();
@@ -97,26 +95,12 @@ public class DashboardActivity extends android.support.v4.app.FragmentActivity
 
 	@Override
 	public void onClick(View v) {
-		
+
 		CoreApplication app = (CoreApplication) getApplication();
 
 		// NEAR
 		if (v.getId() == R.id.button1) {
 			final Intent i = new Intent(this, NearRoutesActivity.class);
-
-			if (app.data == null) {
-				m_runMap = new Handler() {
-					public void handleMessage(android.os.Message msg) {
-						startActivity(i);
-					};
-				};
-			} else {
-				startActivity(i);
-			}
-		}
-		// ALL
-		else if (v.getId() == R.id.button2) {
-			final Intent i = new Intent(this, RoutesActivity.class);
 
 			if (app.data == null) {
 				m_runMap = new Handler() {
@@ -146,14 +130,13 @@ public class DashboardActivity extends android.support.v4.app.FragmentActivity
 			startActivity(new Intent(this, SettingsActivity.class));
 		}
 		// Check Updates
-		// else if( v.getId() == R.id.button5 )
-		// {
-		// // clear last time update
-		// long current =
-		// Calendar.getInstance().getTimeInMillis();
-		// prefs.edit().putLong(
-		// TransitService.PREF_LAST_CHECKED, current ).commit();
-		// }
+		else if (v.getId() == R.id.button5) {
+			// clear last time update
+			Date version = new Date(System.currentTimeMillis());
+			String path = new File(getCacheDir(), "transit_data.zip")
+					.getAbsolutePath();
+			new UpdateAsyncTask(version).execute(path);
+		}
 	}
 
 	/* LoaderCallbacks<List<Route>> */
@@ -205,19 +188,21 @@ public class DashboardActivity extends android.support.v4.app.FragmentActivity
 				String toCache = params[0];
 
 				// loading from web
-				ArrayList<com.bossly.lviv.transit.data.Route> routes = Main.LoadData(toCache);
-				
+				ArrayList<com.bossly.lviv.transit.data.Route> routes = Main
+						.LoadData(toCache);
+
 				// save to db
 				DatabaseSource db = new DatabaseSource(getApplicationContext());
 				db.open();
 				db.clear();
-				
-				for (com.bossly.lviv.transit.data.Route route : routes) {					
-					db.insertRoute(route.name, route.route, route.genDescription(), route.genPath());
+
+				for (com.bossly.lviv.transit.data.Route route : routes) {
+					db.insertRoute(route.id, route.name, route.route,
+							route.genDescription(), route.genPath());
 				}
-				
+
 				db.close();
-				
+
 				success = true;
 
 				isLoading = false;
@@ -263,8 +248,8 @@ public class DashboardActivity extends android.support.v4.app.FragmentActivity
 
 			// Prepare the loader. Either re-connect with an
 			// existing one, or start a new one.
-			// getSupportLoaderManager().initLoader(0, null,
-			// DashboardActivity.this);
+			getSupportLoaderManager().initLoader(0, null,
+					DashboardActivity.this);
 		}
 	}
 

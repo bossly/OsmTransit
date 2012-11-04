@@ -3,8 +3,9 @@ package com.bossly.lviv.transit;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.bossly.lviv.transit.GeoUtils.Point2D;
+
 import android.content.Context;
-import android.database.DataSetObserver;
 import android.graphics.Color;
 import android.location.Location;
 import android.text.Spannable;
@@ -26,34 +27,8 @@ public class RouteAdapter extends ArrayAdapter<Route> {
 
 	final int resource = R.layout.item_route;
 
-	final DataSetObserver observer = new DataSetObserver() {
-
-		@Override
-		public void onChanged() {
-			// TODO Auto-generated method stub
-			super.onChanged();
-
-			if (locationToSort != null) {
-				filtered = GeoUtils.filterRoutes(filtered,
-						locationToSort.getLatitude(),
-						locationToSort.getLongitude(), MAX_DISTANCE);
-			}
-
-		}
-	};
-
 	public RouteAdapter(Context context, List<Route> objects) {
 		super(context, R.layout.item_route, android.R.id.text1, objects);
-
-		//registerDataSetObserver(observer);
-	}
-	
-	@Override
-	protected void finalize() throws Throwable {
-		// TODO Auto-generated method stub
-		super.finalize();
-
-//		unregisterDataSetObserver(observer);
 	}
 
 	@Override
@@ -142,6 +117,7 @@ public class RouteAdapter extends ArrayAdapter<Route> {
 	private CharSequence cur_filter_text = null;
 
 	private class RouteFilter extends Filter {
+
 		private boolean isGood(String constraint, Route route) {
 			String name = route.name.toLowerCase();
 			String desc = route.desc.toLowerCase();
@@ -222,6 +198,7 @@ public class RouteAdapter extends ArrayAdapter<Route> {
 		@Override
 		protected void publishResults(CharSequence constraint,
 				FilterResults results) {
+
 			cur_filter_text = constraint;
 
 			// NOTE: this function is *always* called from the
@@ -235,6 +212,43 @@ public class RouteAdapter extends ArrayAdapter<Route> {
 			notifyDataSetChanged();
 		}
 
+	}
+
+	public void updateByLocation(Location m_location) {
+
+		locationToSort = m_location;
+
+		if (locationToSort == null)
+			return;
+
+		// update distance
+		int routes_count = getCount();
+
+		for (int i = 0; i < routes_count; i++) {
+
+			Route route = getItem(i);
+
+			// calc short way to route
+			if (route.path != null && route.path.length() > 0) {
+
+				String[] points = route.path.split(";");
+
+				for (int j = 0, count = points.length; j < count; j++) {
+					String[] coord = points[j].split(",");
+
+					double clat = Double.parseDouble(coord[1]);
+					double clng = Double.parseDouble(coord[0]);
+
+					double distance = Point2D.distance(
+							locationToSort.getLatitude(),
+							locationToSort.getLongitude(), clat, clng);
+
+					route.min_distance = distance;
+				}
+			}
+		}
+
+		notifyDataSetChanged();
 	}
 
 }

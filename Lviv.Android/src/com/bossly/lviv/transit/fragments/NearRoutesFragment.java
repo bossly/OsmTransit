@@ -1,12 +1,6 @@
 package com.bossly.lviv.transit.fragments;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.TooManyListenersException;
 
 import android.app.Activity;
 import android.app.AlertDialog.Builder;
@@ -33,12 +27,11 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
-import android.widget.BaseAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.ToggleButton;
 import android.widget.TextView.OnEditorActionListener;
+import android.widget.ToggleButton;
 
 import com.bossly.lviv.transit.CoreApplication;
 import com.bossly.lviv.transit.GeoUtils;
@@ -138,7 +131,7 @@ public class NearRoutesFragment extends Fragment implements TextWatcher,
 		m_data = new ArrayList<Route>(app.data);
 		m_adapter = new RouteAdapter(getActivity(), m_data);
 		vListView.setAdapter(m_adapter);
-		
+
 		return content;
 	}
 
@@ -308,16 +301,15 @@ public class NearRoutesFragment extends Fragment implements TextWatcher,
 						accuracy));
 			}
 
-			m_adapter.locationToSort = m_location;
-			m_adapter.notifyDataSetChanged();
+			m_adapter.updateByLocation(m_location);
 
 			if (vListView != null) {
 				vListView.setSelectionFromTop(position, scroll_y);
 			}
 
-//			if (vEditText != null) {
-//				m_adapter.getFilter().filter(vEditText.getText().toString());
-//			}
+			// if (vEditText != null) {
+			// m_adapter.getFilter().filter(vEditText.getText().toString());
+			// }
 		}
 
 		return success;
@@ -374,7 +366,6 @@ public class NearRoutesFragment extends Fragment implements TextWatcher,
 		}
 
 		// update list
-		m_adapter.locationToSort = loc;
-		m_adapter.notifyDataSetChanged();
+		m_adapter.updateByLocation(loc);
 	}
 }

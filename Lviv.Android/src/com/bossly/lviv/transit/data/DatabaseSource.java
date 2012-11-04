@@ -2,13 +2,14 @@ package com.bossly.lviv.transit.data;
 
 import java.util.ArrayList;
 
-import com.bossly.lviv.transit.Route;
-
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
+
+import com.bossly.lviv.transit.Route;
 
 public class DatabaseSource {
 
@@ -33,6 +34,9 @@ public class DatabaseSource {
 		Cursor cursor = database.query(DatabaseHelper.TABLE_ROUTES, null, null,
 				null, null, null, null, null);
 		cursor.moveToFirst();
+		
+		int count = cursor.getCount();
+		Log.d(DatabaseSource.class.getName(), "Loaded routes: " + count);
 
 		ArrayList<Route> routes = new ArrayList<Route>();
 
@@ -60,8 +64,10 @@ public class DatabaseSource {
 		return routes;
 	}
 
-	public long insertRoute(String name, String type, String desc, String path) {
+	public long insertRoute(long id, String name, String type, String desc,
+			String path) {
 		ContentValues values = new ContentValues();
+		values.put(DatabaseHelper.COLUMN_ROUTE_ID, id + "");
 		values.put(DatabaseHelper.COLUMN_ROUTE_NAME, name);
 		values.put(DatabaseHelper.COLUMN_ROUTE_TYPE, type);
 		values.put(DatabaseHelper.COLUMN_ROUTE_DIRECTION, desc);

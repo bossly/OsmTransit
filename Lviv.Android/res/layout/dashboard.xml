@@ -29,24 +29,8 @@
                     android:layout_margin="5dip"
                     android:layout_weight="1"
                     android:background="@drawable/bg_bar_button"
-                    android:drawableTop="@drawable/ic_near"
-                    android:text="@string/menu_routes_near" />
-
-                <Button
-                    android:id="@+id/button2"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="5dip"
-                    android:layout_weight="1"
-                    android:background="@drawable/bg_bar_button"
                     android:drawableTop="@drawable/ic_list"
                     android:text="@string/menu_routes_all" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/linearLayout2"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content" >
 
                 <Button
                     android:id="@+id/button3"
@@ -56,6 +40,21 @@
                     android:background="@drawable/bg_bar_button"
                     android:drawableTop="@drawable/ic_map"
                     android:text="@string/menu_map" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/linearLayout2"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content" >
+
+                <Button
+                    android:id="@+id/button5"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_bar_button"
+                    android:drawableTop="@android:drawable/ic_menu_rotate"
+                    android:text="Download osm data" />
 
                 <Button
                     android:id="@+id/button4"
@@ -66,35 +65,16 @@
                     android:drawableTop="@drawable/ic_settings"
                     android:text="@string/menu_settings" />
             </LinearLayout>
-
-            <!--
-        <LinearLayout
-            android:layout_marginTop="20dip"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content" >
-
-            <Button
-                android:id="@+id/button5"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:background="@drawable/bg_bar_button"
-                android:drawableTop="@android:drawable/ic_menu_rotate"
-                android:text="Check for updates" />
-        </LinearLayout>
-            -->
-
         </LinearLayout>
 
         <TextView
-            android:padding="10dip"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:textColor="#333"
             android:layout_alignParentBottom="true"
-            android:text="@string/authors" />
-        
+            android:gravity="center"
+            android:padding="10dip"
+            android:text="@string/authors"
+            android:textColor="#333" />
     </RelativeLayout>
 
     <RelativeLayout

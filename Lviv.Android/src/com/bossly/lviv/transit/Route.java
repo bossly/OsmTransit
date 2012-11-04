@@ -5,6 +5,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Route implements Comparable<Route>, Serializable {
+
 	private static final long serialVersionUID = -8539225116230155969L;
 
 	public long id;
@@ -51,6 +52,7 @@ public class Route implements Comparable<Route>, Serializable {
 
 	@Override
 	public String toString() {
-		return name + "[" + id + "]" + " - " + min_distance + " m";
+		String pl = path != null ? path.length() + "" : "0";
+		return name + "[" + pl + "]" + " - " + min_distance + " m";
 	}
 }

@@ -11,13 +11,15 @@ import android.location.Location;
 public class GeoUtils {
 
 	static Random r = new Random();
-	
+
 	public static ArrayList<Route> filterRoutes(List<Route> data, double lat,
 			double lng, double max_dist) {
 
-		ArrayList<Route> nearest = new ArrayList<Route>();
+		ArrayList<Route> nearest = null;
 
 		if (data != null) {
+			nearest = new ArrayList<Route>();
+
 			for (Route route : data) {
 
 				// calc short way to route
@@ -34,10 +36,10 @@ public class GeoUtils {
 								.distance(lat, lng, clat, clng);
 
 						route.min_distance = distance;
-						//if (distance >= 0 && distance < max_dist) {
-//							nearest.add(route);
-						//	break;
-						//}
+						// if (distance >= 0 && distance < max_dist) {
+						// nearest.add(route);
+						// break;
+						// }
 					}
 				}
 
