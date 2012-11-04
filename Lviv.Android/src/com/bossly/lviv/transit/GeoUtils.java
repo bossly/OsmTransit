@@ -12,7 +12,7 @@ public class GeoUtils {
 
 	static Random r = new Random();
 
-	public static ArrayList<Route> filterRoutes(List<Route> data, double lat,
+	public static ArrayList<Route> filterRoutes2(List<Route> data, double lat,
 			double lng, double max_dist) {
 
 		ArrayList<Route> nearest = null;
@@ -52,7 +52,7 @@ public class GeoUtils {
 		return nearest;
 	}
 
-	public static ArrayList<Route> filterRoutes2(List<Route> data, double lat,
+	public static ArrayList<Route> filterRoutes(List<Route> data, double lat,
 			double lng, double max_dist) {
 
 		ArrayList<Route> nearest = new ArrayList<Route>();

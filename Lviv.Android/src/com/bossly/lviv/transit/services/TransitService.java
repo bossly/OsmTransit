@@ -43,6 +43,7 @@ public class TransitService extends Service {
 
 	@Override
 	public void onStart(Intent intent, int startId) {
+		
 		// TODO Auto-generated method stub
 		super.onStart(intent, startId);
 

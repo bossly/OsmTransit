@@ -49,7 +49,7 @@ import com.bossly.lviv.transit.services.TrackingService;
 public class RouteMapActivity extends MapActivity implements OnClickListener, LocationListener, OnCheckedChangeListener
 {
   
-  public static final double MAX_DISTANCE = 200; // meters
+  public static final double MAX_DISTANCE = 300; // meters
   
   public static final String EXTRA_ROUTE = "extra_route";
   

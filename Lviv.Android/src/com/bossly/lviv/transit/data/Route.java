@@ -4,6 +4,11 @@ import java.util.ArrayList;
 
 import org.xml.sax.Attributes;
 
+import android.util.Log;
+
+import com.bossly.lviv.transit.GeoUtils;
+import com.bossly.lviv.transit.GeoUtils.Point2D;
+
 public class Route {
 
 	public long id;
@@ -94,14 +99,31 @@ public class Route {
 
 		StringBuilder builder = new StringBuilder();
 
+		// TODO: here is optimized for path generation.
+		// point will be added if distance between prev - next
+		// bigger that 300 meters
+		float min_dist = 300;// meters
+
+		Node prevNode = null;
+
 		for (Long ref : ways) {
 
-			Way way = WebAPI.ways.get(ref); 
-				
+			Way way = WebAPI.ways.get(ref);
+
 			for (Long nd : way.nodes) {
-				
+
 				Node node = WebAPI.nodes.get(nd);
-				builder.append(String.format("%f,%f;", node.lat, node.lon));
+				double dis = min_dist;
+
+				if (prevNode != null) {
+					dis = Point2D.distance(node.lat, node.lon, prevNode.lat,
+							prevNode.lon);
+				}
+
+				if (dis >= min_dist) {
+					builder.append(String.format("%f,%f;", node.lat, node.lon));
+					prevNode = node;
+				}
 			}
 		}
 
@@ -113,7 +135,7 @@ public class Route {
 		StringBuilder builder = new StringBuilder();
 
 		for (Long stop : stops) {
-			
+
 			Node node = WebAPI.nodes.get(stop);
 			builder.append(String.format("%f,%f;", node.lat, node.lon));
 		}
@@ -121,4 +143,32 @@ public class Route {
 		return builder.toString();
 	}
 
+	// 49.7422316,23.8623047,49.9529871,24.2056274
+	public boolean insideCity(double left, double top, double right,
+			double bottom) {
+
+		boolean contain = true;
+
+		for (Long ref : ways) {
+
+			if(!contain)
+				break;
+			
+			Way way = WebAPI.ways.get(ref);
+
+			for (Long nd : way.nodes) {
+
+				Node node = WebAPI.nodes.get(nd);
+
+				if( !(node.lat > left && node.lat < right && node.lon > top && node.lon < bottom) )
+				{
+					Log.d(Route.class.getName(), "Ignored: " + this.name );
+					contain = false;
+					break;
+				}
+			}
+		}
+
+		return contain;
+	}
 }

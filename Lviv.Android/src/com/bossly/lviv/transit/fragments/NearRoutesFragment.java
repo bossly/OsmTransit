@@ -29,6 +29,7 @@ import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 import android.widget.ToggleButton;
@@ -42,7 +43,7 @@ import com.bossly.lviv.transit.activities.RouteMapActivity;
 
 public class NearRoutesFragment extends Fragment implements TextWatcher,
 		OnClickListener, OnItemClickListener, LocationListener,
-		OnCheckedChangeListener {
+		android.widget.RadioGroup.OnCheckedChangeListener {
 
 	public EditText vEditText;
 
@@ -60,13 +61,9 @@ public class NearRoutesFragment extends Fragment implements TextWatcher,
 
 	private ArrayList<Route> m_data = null;
 
-	private View m_determineView;
-
 	private Location m_location = null;
 
 	private LocationManager m_manager;
-
-	private ToggleButton buttonSort;
 
 	@Override
 	public void onAttach(Activity activity) {
@@ -86,13 +83,14 @@ public class NearRoutesFragment extends Fragment implements TextWatcher,
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
+
 		View content = inflater.inflate(R.layout.fr_near_routes, container,
 				false);
 
 		vEditText = (EditText) content.findViewById(R.id.editText1);
 		vListView = (ListView) content.findViewById(R.id.listView1);
-		buttonSort = (ToggleButton) content.findViewById(R.id.toggle_sort);
-		buttonSort.setOnCheckedChangeListener(this);
+		RadioGroup radio = (RadioGroup) content.findViewById(R.id.radioGroup1);
+		radio.setOnCheckedChangeListener(this);
 
 		vEditText.addTextChangedListener(this);
 
@@ -116,7 +114,6 @@ public class NearRoutesFragment extends Fragment implements TextWatcher,
 		vListView.setOnItemClickListener(this);
 
 		m_textStatus = (TextView) content.findViewById(R.id.textStatus);
-		m_determineView = content.findViewById(R.id.location_determine);
 
 		content.findViewById(R.id.button_reload).setOnClickListener(this);
 
@@ -278,9 +275,8 @@ public class NearRoutesFragment extends Fragment implements TextWatcher,
 
 		if (location != null
 				&& GeoUtils.isBetterLocation(location, m_location, TWO_MINUTES)) {
-			success = true;
 
-			m_determineView.setVisibility(View.GONE);
+			success = true;
 
 			m_location = location;
 
@@ -306,10 +302,6 @@ public class NearRoutesFragment extends Fragment implements TextWatcher,
 			if (vListView != null) {
 				vListView.setSelectionFromTop(position, scroll_y);
 			}
-
-			// if (vEditText != null) {
-			// m_adapter.getFilter().filter(vEditText.getText().toString());
-			// }
 		}
 
 		return success;
@@ -350,22 +342,25 @@ public class NearRoutesFragment extends Fragment implements TextWatcher,
 
 	}
 
-	// / Toggle button
-
 	@Override
-	public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+	public void onCheckedChanged(RadioGroup group, int checkedId) {
 
-		Location loc = null;
+		Location loc;
 
-		if (!isChecked) {
+		if (checkedId == R.id.radio0) {
+			loc = null;
 			stopDetermineUserLocation();
 		} else {
-			loc = new Location("");
-
+			loc = m_location; // last known location
 			startDetermineUserLocation();
 		}
 
 		// update list
 		m_adapter.updateByLocation(loc);
+
+		if (vEditText != null) {
+			m_adapter.getFilter().filter(vEditText.getText().toString());
+		}
+
 	}
 }

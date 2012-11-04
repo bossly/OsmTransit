@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
@@ -178,6 +179,18 @@ public class DashboardActivity extends android.support.v4.app.FragmentActivity
 			m_version = version;
 		}
 
+		ProgressDialog dialog;
+
+		@Override
+		protected void onPreExecute() {
+			// TODO Auto-generated method stub
+			super.onPreExecute();
+
+			dialog = new ProgressDialog(DashboardActivity.this);
+			dialog.setMessage("Updating");
+			dialog.show();
+		}
+
 		@Override
 		protected Boolean doInBackground(String... params) {
 
@@ -197,8 +210,14 @@ public class DashboardActivity extends android.support.v4.app.FragmentActivity
 				db.clear();
 
 				for (com.bossly.lviv.transit.data.Route route : routes) {
-					db.insertRoute(route.id, route.name, route.route,
-							route.genDescription(), route.genPath());
+
+					// ignore routes out of city
+					if (route.insideCity(49.7422316, 23.8623047, 49.9529871,
+							24.2056274)) {
+
+						db.insertRoute(route.id, route.name, route.route,
+								route.genDescription(), route.genPath());
+					}
 				}
 
 				db.close();
@@ -208,34 +227,14 @@ public class DashboardActivity extends android.support.v4.app.FragmentActivity
 				isLoading = false;
 			}
 
-			/*
-			 * HttpGet request = new HttpGet(ROUTE_METHOD_GET);
-			 * DefaultHttpClient client = new DefaultHttpClient();
-			 * 
-			 * try { HttpResponse response = client.execute(request);
-			 * 
-			 * HttpEntity entry = response.getEntity();
-			 * 
-			 * // save to cache if (entry != null) { InputStream in =
-			 * entry.getContent(); FileOutputStream fileOut = new
-			 * FileOutputStream(toCache);
-			 * 
-			 * byte[] buffer = new byte[1024]; int read;
-			 * 
-			 * while ((read = in.read(buffer)) != -1) { fileOut.write(buffer, 0,
-			 * read); }
-			 * 
-			 * fileOut.close(); in.close();
-			 * 
-			 * success = true; } } catch (ClientProtocolException e) {
-			 * e.printStackTrace(); } catch (IOException e) {
-			 * e.printStackTrace(); }
-			 */
 			return success;
 		}
 
 		@Override
 		protected void onPostExecute(Boolean result) {
+
+			dialog.dismiss();
+
 			// if download successfully-> save version
 			if (result && m_version != null) {
 				prefs.edit().putLong(PREF_LAST_UPDATE, m_version.getTime())

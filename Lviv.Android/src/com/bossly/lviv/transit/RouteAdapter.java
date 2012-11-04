@@ -1,9 +1,8 @@
 package com.bossly.lviv.transit;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-
-import com.bossly.lviv.transit.GeoUtils.Point2D;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -13,14 +12,18 @@ import android.text.style.BackgroundColorSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
 import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.TextView;
 
-public class RouteAdapter extends ArrayAdapter<Route> {
+import com.bossly.lviv.transit.GeoUtils.Point2D;
+
+public class RouteAdapter extends BaseAdapter implements Filterable {
 
 	public static final double MAX_DISTANCE = 300; // meters
 
+	ArrayList<Route> items = null;
 	ArrayList<Route> filtered = null;
 
 	public Location locationToSort = null;
@@ -28,7 +31,9 @@ public class RouteAdapter extends ArrayAdapter<Route> {
 	final int resource = R.layout.item_route;
 
 	public RouteAdapter(Context context, List<Route> objects) {
-		super(context, R.layout.item_route, android.R.id.text1, objects);
+		super();
+
+		items = new ArrayList<Route>(objects);
 	}
 
 	@Override
@@ -36,16 +41,16 @@ public class RouteAdapter extends ArrayAdapter<Route> {
 		if (filtered != null) {
 			return filtered.size();
 		} else {
-			return super.getCount();
+			return getInternalCount();
 		}
 	}
 
 	private int getInternalCount() {
-		return super.getCount();
+		return items.size();
 	}
 
 	private Route getInternalItem(int position) {
-		return super.getItem(position);
+		return items.get(position);
 	}
 
 	@Override
@@ -53,7 +58,7 @@ public class RouteAdapter extends ArrayAdapter<Route> {
 		if (filtered != null) {
 			return filtered.get(position);
 		} else {
-			return super.getItem(position);
+			return getInternalItem(position);
 		}
 	}
 
@@ -65,8 +70,8 @@ public class RouteAdapter extends ArrayAdapter<Route> {
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
 		if (convertView == null) {
-			convertView = LayoutInflater.from(getContext()).inflate(resource,
-					null);
+			convertView = LayoutInflater.from(parent.getContext()).inflate(
+					resource, null);
 		}
 
 		TextView text1 = (TextView) convertView
@@ -78,8 +83,9 @@ public class RouteAdapter extends ArrayAdapter<Route> {
 		Route route = getItem(position);
 
 		text1.setText(route.toString());
+
 		text2.setText("");
-		text2.append(route.desc);
+		text2.append(route.desc.replace(" вулиця", ""));
 
 		if (cur_filter_text != null && cur_filter_text.length() > 0) {
 			String[] filters = cur_filter_text.toString().toLowerCase()
@@ -119,6 +125,7 @@ public class RouteAdapter extends ArrayAdapter<Route> {
 	private class RouteFilter extends Filter {
 
 		private boolean isGood(String constraint, Route route) {
+
 			String name = route.name.toLowerCase();
 			String desc = route.desc.toLowerCase();
 
@@ -158,6 +165,7 @@ public class RouteAdapter extends ArrayAdapter<Route> {
 
 		@Override
 		protected FilterResults performFiltering(CharSequence constraint) {
+
 			// NOTE: this function is *always* called from a
 			// background thread, and not the UI thread.
 			String text = constraint.toString().toLowerCase();
@@ -207,6 +215,7 @@ public class RouteAdapter extends ArrayAdapter<Route> {
 				filtered = null;
 			} else {
 				filtered = (ArrayList<Route>) results.values;
+				Collections.sort(filtered);
 			}
 
 			notifyDataSetChanged();
@@ -218,35 +227,40 @@ public class RouteAdapter extends ArrayAdapter<Route> {
 
 		locationToSort = m_location;
 
-		if (locationToSort == null)
-			return;
-
 		// update distance
-		int routes_count = getCount();
+		int routes_count = items.size();
 
 		for (int i = 0; i < routes_count; i++) {
 
-			Route route = getItem(i);
+			Route route = items.get(i);
+			route.min_distance = Integer.MAX_VALUE;
+
+			if (m_location == null)
+				continue;
 
 			// calc short way to route
 			if (route.path != null && route.path.length() > 0) {
 
 				String[] points = route.path.split(";");
+				route.points = points.length;
 
 				for (int j = 0, count = points.length; j < count; j++) {
+
 					String[] coord = points[j].split(",");
 
-					double clat = Double.parseDouble(coord[1]);
-					double clng = Double.parseDouble(coord[0]);
+					double clat = Double.parseDouble(coord[0]);
+					double clng = Double.parseDouble(coord[1]);
 
 					double distance = Point2D.distance(
 							locationToSort.getLatitude(),
 							locationToSort.getLongitude(), clat, clng);
 
-					route.min_distance = distance;
+					route.min_distance = Math.min(route.min_distance, distance);
 				}
 			}
 		}
+
+		Collections.sort(items);
 
 		notifyDataSetChanged();
 	}

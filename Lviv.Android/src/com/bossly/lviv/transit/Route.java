@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import android.os.Debug;
+
 public class Route implements Comparable<Route>, Serializable {
 
 	private static final long serialVersionUID = -8539225116230155969L;
@@ -19,6 +21,8 @@ public class Route implements Comparable<Route>, Serializable {
 	public String path;
 
 	public double min_distance;
+
+	public int points = 0;
 
 	@Override
 	public int compareTo(Route another) {
@@ -36,6 +40,21 @@ public class Route implements Comparable<Route>, Serializable {
 
 	final Pattern p = Pattern.compile("(\\d+)");
 
+	private String getHumaneType() {
+
+		String transport = type;
+
+		if (transport.equalsIgnoreCase("bus")) {
+			transport = "Автобус";
+		} else if (transport.equalsIgnoreCase("trolleybus")) {
+			transport = "Тролейбус";
+		} else if (transport.equalsIgnoreCase("tram")) {
+			transport = "Трамвай";
+		}
+
+		return transport;
+	}
+
 	private int getNumber() {
 		int number = 0;
 		Matcher m = p.matcher(name);
@@ -52,7 +71,12 @@ public class Route implements Comparable<Route>, Serializable {
 
 	@Override
 	public String toString() {
-		String pl = path != null ? path.length() + "" : "0";
-		return name + "[" + pl + "]" + " - " + min_distance + " m";
+
+		if (Debug.isDebuggerConnected()) {
+			return name + "[" + points + "]" + " - " + (int) min_distance
+					+ " m";
+		}
+
+		return getHumaneType() + " № " + getNumber();
 	}
 }
