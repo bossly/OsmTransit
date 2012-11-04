@@ -1,11 +1,6 @@
 package com.bossly.lviv.transit.data;
 
-import java.io.InputStream;
-import java.net.URL;
 import java.util.ArrayList;
-
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
@@ -15,12 +10,12 @@ public class Way extends DefaultHandler {
 
 	public long id;
 	public String name;
+
 	public ArrayList<Long> nodes = new ArrayList<Long>();
 
-	public void parse( String qName, Attributes attributes )
-	{
+	public void parse(String qName, Attributes attributes) {
 		if (qName.equalsIgnoreCase("way")) {
-			
+
 			int iid = attributes.getIndex("id");
 			id = Long.parseLong(attributes.getValue(iid));
 		}
@@ -48,41 +43,11 @@ public class Way extends DefaultHandler {
 			}
 		}
 	}
-	
+
 	@Override
 	public void startElement(String uri, String localName, String qName,
 			Attributes attributes) throws SAXException {
 
 		parse(qName, attributes);
-	}
-
-	public Way() {
-	}
-
-	public Way(String ref) {
-
-		if (Main.DEBUG_LOG_LEVEL1)
-			System.out.println("load Way: " + ref);
-
-		String link = "http://www.openstreetmap.org/api/0.6/way/" + ref;
-
-		InputStream stream = null;
-
-		try {
-			URL url = new URL(link);
-			stream = url.openStream();
-
-			SAXParserFactory factory = SAXParserFactory.newInstance();
-			SAXParser parser = factory.newSAXParser();
-
-			parser.parse(stream, this);
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			try {
-				stream.close();
-			} catch (Exception e) {
-			}
-		}
 	}
 }

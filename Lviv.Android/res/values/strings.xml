@@ -3,8 +3,6 @@
 
     <string name="app_name">Transit</string>
     <string name="no_data">No data</string>
-    <string name="agree">Agree</string>
-    <string name="disagree">Disagree</string>
     <string name="update_available_title">New updates available</string>
     <string name="update_available_msg">New transit data available. Download changes?\n(Data size: ~60Кб  )</string>
     <string name="data_updated">Routes updated</string>
@@ -37,7 +35,6 @@
     <string name="srv_warning_msg">Press to disable tracking</string>
     <string name="srv_warning_exit_title">Prepare to exit</string>
     <string name="srv_warning_exit_msg">Press to cancel warning</string>
-    <string name="authors">Authors:\nOleh Baydalka ( helped Oleksandra Chuchko )</string>
 
     <dimen name="stroke_width">1dip</dimen>
 

@@ -1,11 +1,5 @@
 package com.bossly.lviv.transit.data;
 
-import java.io.InputStream;
-import java.net.URL;
-
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
-
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
@@ -16,9 +10,8 @@ public class Node extends DefaultHandler {
 	public double lat;
 	public double lon;
 	public String name;
-	
-	public void parse( String qName, Attributes attributes )
-	{
+
+	public void parse(String qName, Attributes attributes) {
 		if (qName.equalsIgnoreCase("node")) {
 
 			int iid = attributes.getIndex("id");
@@ -27,7 +20,6 @@ public class Node extends DefaultHandler {
 			int ilat = attributes.getIndex("lat");
 			int ilon = attributes.getIndex("lon");
 
-			
 			if (ilat >= 0 && ilon >= 0) {
 				lat = Double.parseDouble(attributes.getValue(ilat));
 				lon = Double.parseDouble(attributes.getValue(ilon));
@@ -53,35 +45,5 @@ public class Node extends DefaultHandler {
 			Attributes attributes) throws SAXException {
 
 		parse(qName, attributes);
-	}
-
-	public Node() {
-	}
-
-	public Node(String ref) {
-
-		if (Main.DEBUG_LOG_LEVEL1)
-			System.out.println("load Node: " + ref);
-
-		String link = "http://www.openstreetmap.org/api/0.6/node/" + ref;
-
-		InputStream stream = null;
-
-		try {
-			URL url = new URL(link);
-			stream = url.openStream();
-
-			SAXParserFactory factory = SAXParserFactory.newInstance();
-			SAXParser parser = factory.newSAXParser();
-
-			parser.parse(stream, this);
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			try {
-				stream.close();
-			} catch (Exception e) {
-			}
-		}
 	}
 }

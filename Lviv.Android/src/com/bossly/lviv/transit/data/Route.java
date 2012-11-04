@@ -1,12 +1,12 @@
 package com.bossly.lviv.transit.data;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.xml.sax.Attributes;
 
 import android.util.Log;
 
-import com.bossly.lviv.transit.GeoUtils;
 import com.bossly.lviv.transit.GeoUtils.Point2D;
 
 public class Route {
@@ -31,6 +31,7 @@ public class Route {
 
 			int ikey = attributes.getIndex("type");
 			int ivalue = attributes.getIndex("ref");
+			int irole = attributes.getIndex("role");
 
 			if (ikey >= 0 && ivalue >= 0) {
 				String type = attributes.getValue(ikey);
@@ -43,9 +44,22 @@ public class Route {
 				}
 				// load ways
 				else if (type.equalsIgnoreCase("way")) {
+
 					// load node info
 					String ref = attributes.getValue(ivalue);
-					ways.add(Long.parseLong(ref));
+					long way_id = Long.parseLong(ref);
+					boolean skip = false;
+
+					if (irole >= 0) {
+						String str_role = attributes.getValue(irole);
+
+						if (str_role != null && str_role.length() > 0)
+							skip = true;
+					}
+
+					if (!skip)
+						ways.add(way_id);
+
 				}
 			}
 		} else if (qName.equalsIgnoreCase("tag")) {
@@ -101,29 +115,66 @@ public class Route {
 
 		// TODO: here is optimized for path generation.
 		// point will be added if distance between prev - next
-		// bigger that 300 meters
-		float min_dist = 300;// meters
+		// bigger that 150 meters
+		float min_dist = 150;// meters
 
 		Node prevNode = null;
+		long lastNode = -1;
+		ArrayList<Node> way_nodes = new ArrayList<Node>();
+		int way_index = 0;
 
 		for (Long ref : ways) {
 
 			Way way = WebAPI.ways.get(ref);
 
+			// check if need to reverse
+			long last = way.nodes.size() > 0 ? way.nodes
+					.get(way.nodes.size() - 1) : 0;
+			boolean reverse = false;
+			int last_index = way_nodes.size();
+
+			if (last == lastNode) {
+				reverse = true;
+			} else if (way_index == 1 && way_nodes.size() > 0
+					&& last == way_nodes.get(0).id) {
+				ArrayList<Node> revertedL = new ArrayList<Node>();
+
+				// revert way_nodes array
+				for (int i = way_nodes.size() - 1; i >= 0; i--) {
+					revertedL.add(way_nodes.get(i));
+				}
+
+				way_nodes = revertedL;
+				reverse = true;
+			}
+
 			for (Long nd : way.nodes) {
 
 				Node node = WebAPI.nodes.get(nd);
-				double dis = min_dist;
 
-				if (prevNode != null) {
-					dis = Point2D.distance(node.lat, node.lon, prevNode.lat,
-							prevNode.lon);
-				}
+				if (reverse && way_nodes.size() != last_index)
+					way_nodes.add(last_index, node);
+				else
+					way_nodes.add(node);
+			}
 
-				if (dis >= min_dist) {
-					builder.append(String.format("%f,%f;", node.lat, node.lon));
-					prevNode = node;
-				}
+			lastNode = way_nodes.size() > 0 ? way_nodes
+					.get(way_nodes.size() - 1).id : -1;
+			way_index++;
+		}
+
+		for (Node node : way_nodes) {
+
+			double dis = min_dist;
+
+			if (prevNode != null) {
+				dis = Point2D.distance(node.lat, node.lon, prevNode.lat,
+						prevNode.lon);
+			}
+
+			if (dis >= min_dist) {
+				builder.append(String.format("%f,%f;", node.lat, node.lon));
+				prevNode = node;
 			}
 		}
 
@@ -151,18 +202,17 @@ public class Route {
 
 		for (Long ref : ways) {
 
-			if(!contain)
+			if (!contain)
 				break;
-			
+
 			Way way = WebAPI.ways.get(ref);
 
 			for (Long nd : way.nodes) {
 
 				Node node = WebAPI.nodes.get(nd);
 
-				if( !(node.lat > left && node.lat < right && node.lon > top && node.lon < bottom) )
-				{
-					Log.d(Route.class.getName(), "Ignored: " + this.name );
+				if (!(node.lat > left && node.lat < right && node.lon > top && node.lon < bottom)) {
+					Log.d(Route.class.getName(), "Ignored: " + this.name);
 					contain = false;
 					break;
 				}

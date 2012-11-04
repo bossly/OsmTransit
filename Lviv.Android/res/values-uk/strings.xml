@@ -3,8 +3,6 @@
 
     <string name="app_name">Транспорт</string>
     <string name="no_data">Немає даних</string>
-    <string name="agree">Погоджуюсь</string>
-    <string name="disagree">Не погоджуюсь</string>
     <string name="update_available_title">Доступні оновлення</string>
     <string name="update_available_msg">Нові дані про маршрути доступні в мережі. Завантажити зміни?\n(Розмір даних: ~60Кб  )</string>
     <string name="data_updated">Маршрути оновлено</string>
@@ -37,6 +35,5 @@
     <string name="srv_warning_msg">Натисніть, щоб вимкнути</string>
     <string name="srv_warning_exit_title">Пригодуйтеся виходити</string>
     <string name="srv_warning_exit_msg">Натисніть, щоб видалити повідомлення</string>
-    <string name="authors">Автори:\nОлег Байдалка ( допомагала Олександра Чучко )</string>
 
 </resources>

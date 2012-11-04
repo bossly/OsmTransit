@@ -4,8 +4,6 @@ import java.io.Serializable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import android.os.Debug;
-
 public class Route implements Comparable<Route>, Serializable {
 
 	private static final long serialVersionUID = -8539225116230155969L;
@@ -72,10 +70,9 @@ public class Route implements Comparable<Route>, Serializable {
 	@Override
 	public String toString() {
 
-		if (Debug.isDebuggerConnected()) {
-			return name + "[" + points + "]" + " - " + (int) min_distance
-					+ " m";
-		}
+//		if (BuildConfig.DEBUG) {
+//			return name + "[" + id + "]" + " - " + (int) min_distance + " m";
+//		}
 
 		return getHumaneType() + " № " + getNumber();
 	}

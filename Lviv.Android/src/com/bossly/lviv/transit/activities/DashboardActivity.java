@@ -14,6 +14,7 @@ import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.Loader;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Toast;
@@ -208,6 +209,7 @@ public class DashboardActivity extends android.support.v4.app.FragmentActivity
 				DatabaseSource db = new DatabaseSource(getApplicationContext());
 				db.open();
 				db.clear();
+				int added = 0;
 
 				for (com.bossly.lviv.transit.data.Route route : routes) {
 
@@ -217,8 +219,12 @@ public class DashboardActivity extends android.support.v4.app.FragmentActivity
 
 						db.insertRoute(route.id, route.name, route.route,
 								route.genDescription(), route.genPath());
+						added++;
 					}
 				}
+
+				Log.d(DashboardActivity.class.getName(),
+						"Routes addded to db: " + added);
 
 				db.close();
 
