@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import android.R.string;
 import android.content.Context;
 import android.graphics.Color;
 import android.location.Location;
@@ -84,8 +85,10 @@ public class RouteAdapter extends BaseAdapter implements Filterable {
 
 		text1.setText(route.toString());
 
+		String desc = route.desc.replace(" вулиця", "");
+		
 		text2.setText("");
-		text2.append(route.desc.replace(" вулиця", ""));
+		text2.append(desc);
 
 		if (cur_filter_text != null && cur_filter_text.length() > 0) {
 			String[] filters = cur_filter_text.toString().toLowerCase()
@@ -94,14 +97,18 @@ public class RouteAdapter extends BaseAdapter implements Filterable {
 
 			Spannable sText = (Spannable) text2.getText();
 
-			String ds = route.desc.toLowerCase();
+			String ds = desc.toLowerCase();
 
 			for (int i = 0; i < filters_count; i++) {
 				int pos = ds.indexOf(filters[i]);
 
 				while (pos >= 0) {
-					sText.setSpan(new BackgroundColorSpan(Color.YELLOW), pos,
-							pos + filters[i].length(), 0);
+					BackgroundColorSpan spanColor = new BackgroundColorSpan(
+							Color.YELLOW);
+					int end = pos + filters[i].length();
+
+					if (sText.length() > end)
+						sText.setSpan(spanColor, pos, end, 0);
 
 					pos = ds.indexOf(filters[i], pos + 1);
 				}

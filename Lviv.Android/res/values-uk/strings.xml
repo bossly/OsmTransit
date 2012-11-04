@@ -15,8 +15,7 @@
     <string name="dlg_location_message">Увімкніть GPS в налаштуваннях, щоб покращити точність визначення вашого місцезнаходження</string>
     <string name="dlg_settings">Налаштування</string>
     <string name="lbl_searching">Пошук…</string>
-    <string name="menu_routes_near">Маршрути поблизу</string>
-    <string name="menu_routes_all">Всі маршрути</string>
+    <string name="menu_routes_all">Маршрути</string>
     <string name="menu_map">Карта (beta)</string>
     <string name="menu_settings">Налаштування</string>
     <string name="filter_hint">наукова центр ашан …</string>
@@ -39,5 +38,5 @@
     <string name="srv_warning_exit_title">Пригодуйтеся виходити</string>
     <string name="srv_warning_exit_msg">Натисніть, щоб видалити повідомлення</string>
     <string name="authors">Автори:\nОлег Байдалка ( допомагала Олександра Чучко )</string>
-    
+
 </resources>

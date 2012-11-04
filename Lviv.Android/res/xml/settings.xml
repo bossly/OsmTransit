@@ -19,7 +19,12 @@
             android:key="wifi_only"
             android:persistent="true"
             android:title="Wifi only" />
-
+    </PreferenceCategory>
+    <PreferenceCategory android:title="Автор додатку" >
+        <Preference android:title="Олег Байдалка" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="Подяка за допомогу" >
+        <Preference android:title="Олександра Чучко" />
     </PreferenceCategory>
 
 </PreferenceScreen>

@@ -4,78 +4,64 @@
     android:layout_height="fill_parent"
     android:background="#eee" >
 
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent" >
+        android:layout_height="fill_parent"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:padding="10dip" >
 
         <LinearLayout
+            android:id="@+id/linearLayout1"
             android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:gravity="center"
-            android:orientation="vertical"
-            android:padding="10dip" >
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="60dip"
+            android:gravity="center" >
 
-            <LinearLayout
-                android:id="@+id/linearLayout1"
+            <Button
+                android:id="@+id/button1"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="60dip"
-                android:gravity="center" >
+                android:layout_margin="5dip"
+                android:layout_weight="1"
+                android:background="@drawable/bg_bar_button"
+                android:drawableTop="@drawable/ic_list"
+                android:text="@string/menu_routes_all" />
 
-                <Button
-                    android:id="@+id/button1"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="5dip"
-                    android:layout_weight="1"
-                    android:background="@drawable/bg_bar_button"
-                    android:drawableTop="@drawable/ic_list"
-                    android:text="@string/menu_routes_all" />
-
-                <Button
-                    android:id="@+id/button3"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:background="@drawable/bg_bar_button"
-                    android:drawableTop="@drawable/ic_map"
-                    android:text="@string/menu_map" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/linearLayout2"
+            <Button
+                android:id="@+id/button3"
                 android:layout_width="fill_parent"
-                android:layout_height="wrap_content" >
-
-                <Button
-                    android:id="@+id/button5"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:background="@drawable/bg_bar_button"
-                    android:drawableTop="@android:drawable/ic_menu_rotate"
-                    android:text="Download osm data" />
-
-                <Button
-                    android:id="@+id/button4"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:background="@drawable/bg_bar_button"
-                    android:drawableTop="@drawable/ic_settings"
-                    android:text="@string/menu_settings" />
-            </LinearLayout>
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/bg_bar_button"
+                android:drawableTop="@drawable/ic_map"
+                android:text="@string/menu_map" />
         </LinearLayout>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:gravity="center"
-            android:padding="10dip"
-            android:text="@string/authors"
-            android:textColor="#333" />
-    </RelativeLayout>
+        <LinearLayout
+            android:id="@+id/linearLayout2"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content" >
+
+            <Button
+                android:id="@+id/button5"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/bg_bar_button"
+                android:drawableTop="@android:drawable/ic_menu_rotate"
+                android:text="Download osm data" />
+
+            <Button
+                android:id="@+id/button4"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/bg_bar_button"
+                android:drawableTop="@drawable/ic_settings"
+                android:text="@string/menu_settings" />
+        </LinearLayout>
+    </LinearLayout>
 
     <RelativeLayout
         android:id="@+id/loading"

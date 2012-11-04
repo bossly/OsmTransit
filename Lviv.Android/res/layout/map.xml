@@ -62,15 +62,22 @@
 
             <Button
                 android:id="@+id/btn_plus"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:text="+" />
+                android:layout_width="50dip"
+                android:layout_height="50dip"
+                android:layout_marginBottom="5dip"
+                android:background="@drawable/trans_button"
+                android:text="+"
+                android:textColor="#fff"
+                android:textSize="30dip" />
 
             <Button
                 android:id="@+id/btn_minus"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:text="-" />
+                android:layout_width="50dip"
+                android:layout_height="50dip"
+                android:background="@drawable/trans_button"
+                android:text="-"
+                android:textColor="#fff"
+                android:textSize="30dip" />
         </LinearLayout>
 
         <!-- Loading indicator -->
@@ -82,7 +89,6 @@
             android:background="#a333"
             android:gravity="center"
             android:padding="5dip"
-            android:text="Карта лише для перегляду"
             android:textColor="#fff" />
 
         <ImageButton

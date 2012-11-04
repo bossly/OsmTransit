@@ -15,8 +15,7 @@
     <string name="dlg_location_message">Please, turn on GPS in settings, for get better accuracy.</string>
     <string name="dlg_settings">Settings</string>
     <string name="lbl_searching">Searching…</string>
-    <string name="menu_routes_near">Near routes</string>
-    <string name="menu_routes_all">All routes</string>
+    <string name="menu_routes_all">Routes</string>
     <string name="menu_map">Map (beta)</string>
     <string name="menu_settings">Settings</string>
     <string name="filter_hint">наукова центр ашан …</string>
@@ -39,5 +38,7 @@
     <string name="srv_warning_exit_title">Prepare to exit</string>
     <string name="srv_warning_exit_msg">Press to cancel warning</string>
     <string name="authors">Authors:\nOleh Baydalka ( helped Oleksandra Chuchko )</string>
-    
+
+    <dimen name="stroke_width">1dip</dimen>
+
 </resources>
