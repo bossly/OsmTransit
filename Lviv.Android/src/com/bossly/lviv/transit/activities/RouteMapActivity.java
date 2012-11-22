@@ -47,8 +47,7 @@ import com.bossly.lviv.transit.Route;
 import com.bossly.lviv.transit.services.TrackingService;
 
 public class RouteMapActivity extends MapActivity implements OnClickListener, LocationListener, OnCheckedChangeListener
-{
-  
+{  
   public static final double MAX_DISTANCE = 300; // meters
   
   public static final String EXTRA_ROUTE = "extra_route";
@@ -72,7 +71,6 @@ public class RouteMapActivity extends MapActivity implements OnClickListener, Lo
   @Override
   protected void onCreate( Bundle savedInstanceState )
   {
-    // TODO Auto-generated method stub
     super.onCreate( savedInstanceState );
     
     setContentView( R.layout.map );

@@ -1,7 +1,6 @@
 package com.bossly.lviv.transit.data;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import org.xml.sax.Attributes;
 

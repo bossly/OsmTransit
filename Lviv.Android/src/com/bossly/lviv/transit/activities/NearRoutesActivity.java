@@ -9,8 +9,7 @@ import com.bossly.lviv.transit.R;
 import com.bossly.lviv.transit.fragments.NearRoutesFragment;
 
 public class NearRoutesActivity extends FragmentActivity
-{
-  
+{  
   public static final String PREF_AGREEMENT_AGREE_V1 = "agreement_user_agree_v1.0";
   
   private NearRoutesFragment fragmentNear;
@@ -37,7 +36,6 @@ public class NearRoutesActivity extends FragmentActivity
   @Override
   protected void onResume()
   {
-    // TODO Auto-generated method stub
     super.onResume();
     
     fragmentNear.startDetermineUserLocation();
@@ -46,10 +44,8 @@ public class NearRoutesActivity extends FragmentActivity
   @Override
   protected void onPause()
   {
-    // TODO Auto-generated method stub
     super.onPause();
     
     fragmentNear.stopDetermineUserLocation();
   }
-  
 }

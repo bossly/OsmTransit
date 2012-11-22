@@ -29,6 +29,16 @@ public class DatabaseSource {
 	public void close() {
 		dbHelper.close();
 	}
+	
+	public void beginTransaction()
+	{
+		database.beginTransaction();
+	}
+	
+	public void endTransaction()
+	{
+		database.endTransaction();
+	}
 
 	public ArrayList<Route> getRoutes() {
 		Cursor cursor = database.query(DatabaseHelper.TABLE_ROUTES, null, null,

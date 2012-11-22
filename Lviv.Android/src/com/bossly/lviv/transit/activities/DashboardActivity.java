@@ -53,7 +53,7 @@ public class DashboardActivity extends android.support.v4.app.FragmentActivity
 		findViewById(R.id.button1).setOnClickListener(this);
 		findViewById(R.id.button3).setOnClickListener(this);
 		findViewById(R.id.button4).setOnClickListener(this);
-		findViewById(R.id.button5).setOnClickListener(this);
+		findViewById(R.id.v_btn_update).setOnClickListener(this);
 
 		Intent intent = getIntent();
 		Bundle extras = intent.getExtras();
@@ -84,7 +84,7 @@ public class DashboardActivity extends android.support.v4.app.FragmentActivity
 		super.onResume();
 
 		// start self-working service
-		startService(new Intent(this, TransitService.class));
+		//startService(new Intent(this, TransitService.class));
 	}
 
 	@Override
@@ -132,12 +132,14 @@ public class DashboardActivity extends android.support.v4.app.FragmentActivity
 			startActivity(new Intent(this, SettingsActivity.class));
 		}
 		// Check Updates
-		else if (v.getId() == R.id.button5) {
+		else if (v.getId() == R.id.v_btn_update) {
 			// clear last time update
-			Date version = new Date(System.currentTimeMillis());
-			String path = new File(getCacheDir(), "transit_data.zip")
-					.getAbsolutePath();
-			new UpdateAsyncTask(version).execute(path);
+//			Date version = new Date(System.currentTimeMillis());
+//			String path = new File(getCacheDir(), "transit_data.zip")
+//					.getAbsolutePath();
+//			new UpdateAsyncTask(version).execute(path);
+			
+			startService(new Intent(this, TransitService.class));
 		}
 	}
 

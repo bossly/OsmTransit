@@ -1,133 +1,92 @@
 package com.bossly.lviv.transit.services;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Calendar;
-import java.util.Date;
+import java.util.ArrayList;
 
-import android.app.Service;
+import android.app.IntentService;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-import android.os.IBinder;
-import android.preference.PreferenceManager;
+import android.support.v4.app.NotificationCompat;
+import android.util.Log;
 import android.widget.Toast;
 
+import com.bossly.lviv.transit.R;
 import com.bossly.lviv.transit.activities.DashboardActivity;
+import com.bossly.lviv.transit.data.DatabaseSource;
+import com.bossly.lviv.transit.data.Main;
 
-public class TransitService extends Service {
+public class TransitService extends IntentService
+{
+	public static final int UPDATE_NOTIFICATION_ID = 0x01;
+	public final static String ACTION_UPDATED = "TransitService.updated";
+	
+	private boolean mIsRunning = false;
 
-	private static final String PREF_LAST_UPDATE = "pref_last_date";
-
-	public static final String PREF_WIFI_ONLY = "wifi_only";
-
-	// routes update every day
-	private static final long UPDATE_TIME = 24 * 60 * 60 * 1000;
-
-	private SharedPreferences prefs;
-
-	private Date m_lastUpdateDate;
-
-	@Override
-	public IBinder onBind(Intent arg0) {
-		// TODO Auto-generated method stub
-		return null;
+	public TransitService()
+	{
+		super("TransitService");
 	}
 
 	@Override
-	public void onCreate() {
-		// TODO Auto-generated method stub
-		super.onCreate();
+	public void onStart(Intent intent, int startId)
+	{
+		if(mIsRunning)
+		{
+			Toast.makeText(this, "Updating is already statred", Toast.LENGTH_SHORT).show();
+		}
+		else
+		{
+			super.onStart(intent, startId);
+		}
 	}
 
 	@Override
-	public void onStart(Intent intent, int startId) {
-		
-		// TODO Auto-generated method stub
-		super.onStart(intent, startId);
+	protected void onHandleIntent(Intent intent)
+	{
+		mIsRunning = true;
+		NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this);
+		NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
-		prefs = PreferenceManager
-				.getDefaultSharedPreferences(getApplicationContext());
+		notificationBuilder.setSmallIcon(R.drawable.ic_update_service);
+		notificationBuilder.setContentTitle("Transport");
+		notificationBuilder.setContentText("String updating");
+		notificationBuilder.setContentIntent(PendingIntent.getActivity(this, 0, new Intent(this,
+				DashboardActivity.class), 0));
 
-		long last_date = prefs.getLong(PREF_LAST_UPDATE, 0);
-		m_lastUpdateDate = (last_date > 0) ? new Date(last_date) : new Date(0);
+		notificationBuilder.setProgress(0, 0, true);
+		notificationManager.notify(UPDATE_NOTIFICATION_ID, notificationBuilder.build());
 
-		long current = Calendar.getInstance().getTimeInMillis();
+		ArrayList<com.bossly.lviv.transit.data.Route> routes = Main.LoadData(null);
 
-		boolean wifi_only = prefs.getBoolean(PREF_WIFI_ONLY, true);
+		// save to db
+		DatabaseSource db = new DatabaseSource(getApplicationContext());
+		db.open();
+		db.beginTransaction();
+		db.clear();
+		int added = 0;
+		int index = 0;
 
-		ConnectivityManager connManager = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
-		NetworkInfo mWifi = connManager
-				.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+		for (com.bossly.lviv.transit.data.Route route : routes)
+		{
+			// ignore routes out of city
+			if (route.insideCity(49.7422316, 23.8623047, 49.9529871, 24.2056274))
+			{
 
-		if (current - m_lastUpdateDate.getTime() > UPDATE_TIME) {
-			if ((wifi_only && mWifi.isConnected()) || !wifi_only) {
-				// Do whatever
-				Toast.makeText(this, "start update routes", Toast.LENGTH_LONG)
-						.show();
+				db.insertRoute(route.id, route.name, route.route, route.genDescription(), route.genPath());
+				added++;
 
-				// check for updated and notify about it
-				tryToUpdate();
-			}
-		}
-	}
-
-	private void tryToUpdate() {
-		
-		// check user option
-		SharedPreferences prefs = PreferenceManager
-				.getDefaultSharedPreferences(getApplicationContext());
-
-		boolean needCheck = prefs.getBoolean("autocheck", true);
-		Date lastFromServlet;
-
-		if (needCheck) {
-			lastFromServlet = new Date(System.currentTimeMillis());
-		} else {
-			lastFromServlet = new Date(0);
-		}
-
-		boolean needDownloadData = true;
-
-		File file = new File(getCacheDir(), "transit_data.zip");
-
-		if (!file.exists()) {
-			try {
-				file.createNewFile();
-			} catch (IOException e) {
-			}
-		}
-		// if cache exist - check if it latest version
-		else {
-			if (m_lastUpdateDate != null
-					&& (System.currentTimeMillis() - m_lastUpdateDate.getTime()) < UPDATE_TIME) {
-
-				// in server old data. no need to download data
-				needDownloadData = false;
+				notificationBuilder.setProgress(routes.size(), index++, false);
+				notificationManager.notify(UPDATE_NOTIFICATION_ID, notificationBuilder.build());
 			}
 		}
 
-		if (needDownloadData && lastFromServlet != null) {
+		Log.d(DashboardActivity.class.getName(), "Routes addded to db: " + added);
 
-			prefs.edit().putLong(PREF_LAST_UPDATE, lastFromServlet.getTime())
-					.commit();
+		db.endTransaction();
+		db.close();
 
-			Intent intent = new Intent(getApplicationContext(),
-					DashboardActivity.class);
-			intent.putExtra("ppath", file.getAbsolutePath());
-			intent.putExtra("download", true);
-			intent.putExtra("version", lastFromServlet.getTime());
-			intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-
-			boolean autoupdate = prefs.getBoolean("autoupdate", true);
-
-			if (autoupdate) {
-				intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-				startActivity(intent);
-			}
-		}
-
-		stopSelf();
+		notificationManager.cancel(UPDATE_NOTIFICATION_ID);
+		mIsRunning = false;
 	}
 }
