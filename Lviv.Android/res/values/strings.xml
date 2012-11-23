@@ -38,4 +38,6 @@
 
     <dimen name="stroke_width">1dip</dimen>
 
+    <string name="title_data_loading">Loading data...</string>
+
 </resources>
