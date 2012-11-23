@@ -1,6 +1,7 @@
 package com.bossly.lviv.transit.fragments;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import android.app.Activity;
 import android.app.AlertDialog.Builder;
@@ -42,10 +43,11 @@ import com.bossly.lviv.transit.R;
 import com.bossly.lviv.transit.Route;
 import com.bossly.lviv.transit.RouteAdapter;
 import com.bossly.lviv.transit.RouteCursorAdapter;
+import com.bossly.lviv.transit.RoutesLoader;
 import com.bossly.lviv.transit.activities.RouteMapActivity;
 import com.bossly.lviv.transit.data.RoutesContract;
 
-public class NearRoutesFragment extends Fragment implements LoaderCallbacks<Cursor>, TextWatcher,
+public class NearRoutesFragment extends Fragment implements LoaderCallbacks<List<Route>>, TextWatcher,
 		OnClickListener, OnItemClickListener, LocationListener,
 		android.widget.RadioGroup.OnCheckedChangeListener
 {
@@ -70,15 +72,6 @@ public class NearRoutesFragment extends Fragment implements LoaderCallbacks<Curs
 
 	private LocationManager m_manager;
 	
-	private FilterQueryProvider mFilterQueryProvider = new FilterQueryProvider()
-	{
-		@Override
-		public Cursor runQuery(CharSequence constraint)
-		{
-			return null;
-		}
-	};
-
 	@Override
 	public void onAttach(Activity activity)
 	{
@@ -141,7 +134,7 @@ public class NearRoutesFragment extends Fragment implements LoaderCallbacks<Curs
 
 		m_data = new ArrayList<Route>(app.data);
 		m_adapter = new RouteAdapter(getActivity(), m_data);
-		// vListView.setAdapter(m_adapter);
+		vListView.setAdapter(m_adapter);
 
 		return content;
 	}
@@ -181,17 +174,13 @@ public class NearRoutesFragment extends Fragment implements LoaderCallbacks<Curs
 	/* TextWatcher */
 
 	@Override
-	public void afterTextChanged(Editable arg0)
+	public void afterTextChanged(Editable e)
 	{
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	public void beforeTextChanged(CharSequence s, int start, int count, int after)
 	{
-		// TODO Auto-generated method stub
-
 	}
 
 	Handler handler = new Handler()
@@ -205,7 +194,6 @@ public class NearRoutesFragment extends Fragment implements LoaderCallbacks<Curs
 					m_adapter.getFilter().filter(msg.obj.toString());
 				}
 			}
-
 		};
 	};
 
@@ -223,7 +211,7 @@ public class NearRoutesFragment extends Fragment implements LoaderCallbacks<Curs
 		{
 			msg = handler.obtainMessage(0, s.toString());
 			handler.sendMessageDelayed(msg, 100);
-			// m_adapter.getFilter().filter( s );
+			m_adapter.getFilter().filter( s );
 		}
 	}
 
@@ -373,22 +361,16 @@ public class NearRoutesFragment extends Fragment implements LoaderCallbacks<Curs
 	@Override
 	public void onProviderDisabled(String provider)
 	{
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	public void onProviderEnabled(String provider)
 	{
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	public void onStatusChanged(String provider, int status, Bundle extras)
 	{
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
@@ -419,21 +401,21 @@ public class NearRoutesFragment extends Fragment implements LoaderCallbacks<Curs
 	}
 
 	@Override
-	public Loader<Cursor> onCreateLoader(int id, Bundle args)
+	public Loader<List<Route>> onCreateLoader(int id, Bundle args)
 	{
-		return new CursorLoader(getActivity(), RoutesContract.RouteData.CONTENT_URI, null, null, null,
-				null);
+		return new RoutesLoader(getActivity());
 	}
 
-	@Override
-	public void onLoadFinished(Loader<Cursor> loader, Cursor result)
-	{
-		vListView.setAdapter(new RouteCursorAdapter(getActivity(), result,
-				RouteCursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER));
-	}
 
 	@Override
-	public void onLoaderReset(Loader<Cursor> loader)
-	{
-	}
+  public void onLoadFinished(Loader<List<Route>> loader, List<Route> result)
+  {
+		m_adapter = new RouteAdapter(getActivity(), result);
+		vListView.setAdapter(m_adapter);
+  }
+
+	@Override
+  public void onLoaderReset(Loader<List<Route>> loader)
+  {
+  }
 }

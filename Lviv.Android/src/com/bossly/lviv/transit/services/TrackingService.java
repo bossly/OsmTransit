@@ -34,14 +34,12 @@ public class TrackingService extends Service implements LocationListener
   @Override
   public IBinder onBind( Intent arg0 )
   {
-    // TODO Auto-generated method stub
     return null;
   }
   
   @Override
   public void onCreate()
   {
-    // TODO Auto-generated method stub
     super.onCreate();
     
     mLM = ( LocationManager )getSystemService( Context.LOCATION_SERVICE );
@@ -76,7 +74,6 @@ public class TrackingService extends Service implements LocationListener
   @Override
   public void onDestroy()
   {
-    // TODO Auto-generated method stub
     super.onDestroy();
     
     mNM.cancel( 0 );
@@ -161,22 +158,15 @@ public class TrackingService extends Service implements LocationListener
   @Override
   public void onProviderDisabled( String provider )
   {
-    // TODO Auto-generated method stub
-    
   }
   
   @Override
   public void onProviderEnabled( String provider )
   {
-    // TODO Auto-generated method stub
-    
   }
   
   @Override
   public void onStatusChanged( String provider, int status, Bundle extras )
   {
-    // TODO Auto-generated method stub
-    
-  }
-  
+  }  
 }

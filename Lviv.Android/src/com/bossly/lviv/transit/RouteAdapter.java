@@ -8,6 +8,7 @@ import android.content.Context;
 import android.graphics.Color;
 import android.location.Location;
 import android.text.Spannable;
+import android.text.TextUtils;
 import android.text.style.BackgroundColorSpan;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,6 +19,7 @@ import android.widget.Filterable;
 import android.widget.TextView;
 
 import com.bossly.lviv.transit.GeoUtils.Point2D;
+import com.bossly.lviv.transit.utils.CommonUtils;
 
 public class RouteAdapter extends BaseAdapter implements Filterable
 {
@@ -95,44 +97,18 @@ public class RouteAdapter extends BaseAdapter implements Filterable
 
 		TextView text1 = (TextView) convertView.findViewById(android.R.id.text1);
 		TextView text2 = (TextView) convertView.findViewById(android.R.id.text2);
-		TextView text3 = (TextView) convertView.findViewById(R.id.text3);
 
 		Route route = getItem(position);
+		text1.setText(route.name);
 
-		text1.setText(route.toString());
-
-		String desc = route.desc.replace(" вулиця", "");
-
-		text2.setText("");
-		text2.append(desc);
-
-		if (cur_filter_text != null && cur_filter_text.length() > 0)
+		if(TextUtils.isEmpty(cur_filter_text))
 		{
-			String[] filters = cur_filter_text.toString().toLowerCase().split(" ");
-			int filters_count = filters.length;
-
-			Spannable sText = (Spannable) text2.getText();
-
-			String ds = desc.toLowerCase();
-
-			for (int i = 0; i < filters_count; i++)
-			{
-				int pos = ds.indexOf(filters[i]);
-
-				while (pos >= 0)
-				{
-					BackgroundColorSpan spanColor = new BackgroundColorSpan(Color.YELLOW);
-					int end = pos + filters[i].length();
-
-					if (sText.length() > end)
-						sText.setSpan(spanColor, pos, end, 0);
-
-					pos = ds.indexOf(filters[i], pos + 1);
-				}
-			}
+			text2.setText(route.desc);
 		}
-
-		text3.setText("");
+		else
+		{
+			text2.setText(CommonUtils.highlight(route.desc, cur_filter_text.toString().split(" "), Color.YELLOW));
+		}
 
 		return convertView;
 	}

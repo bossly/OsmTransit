@@ -32,10 +32,9 @@ public class RouteCursorAdapter extends CursorAdapter
 	{
 		TextView text1 = (TextView) view.findViewById(android.R.id.text1);
 		TextView text2 = (TextView) view.findViewById(android.R.id.text2);
-		TextView text3 = (TextView) view.findViewById(R.id.text3);
 		
 		text1.setText(cursor.getString(_nameIndex));
-		text2.setText(cursor.getString(_descIndex).replace(" вулиця", ""));
+		text2.setText(cursor.getString(_descIndex));
 	}
 
 	@Override

@@ -37,6 +37,7 @@ public class DatabaseSource {
 	
 	public void endTransaction()
 	{
+		database.setTransactionSuccessful();
 		database.endTransaction();
 	}
 

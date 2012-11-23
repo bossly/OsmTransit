@@ -223,7 +223,6 @@ public class RouteMapActivity extends MapActivity implements OnClickListener, Lo
   @Override
   protected void onResume()
   {
-    // TODO Auto-generated method stub
     super.onResume();
     
     startDetermineUserLocation();
@@ -232,7 +231,6 @@ public class RouteMapActivity extends MapActivity implements OnClickListener, Lo
   @Override
   protected void onPause()
   {
-    // TODO Auto-generated method stub
     super.onPause();
     
     stopDetermineUserLocation();
@@ -241,7 +239,6 @@ public class RouteMapActivity extends MapActivity implements OnClickListener, Lo
   @Override
   protected void onDestroy()
   {
-    // TODO Auto-generated method stub
     super.onDestroy();
     
     if( nearTask != null )
@@ -447,7 +444,6 @@ public class RouteMapActivity extends MapActivity implements OnClickListener, Lo
     @Override
     protected void onProgressUpdate( Route ... values )
     {
-      // TODO Auto-generated method stub
       super.onProgressUpdate( values );
       
       route_to_add.add( values[0] );

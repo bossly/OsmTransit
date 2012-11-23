@@ -1,6 +1,8 @@
 package com.bossly.lviv.transit.data;
 
 import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.xml.sax.Attributes;
 
@@ -84,6 +86,8 @@ public class Route {
 			}
 		}
 	}
+	
+	private final static Pattern NAME_PATTERN = Pattern.compile("(^[^ ]*\\s.\\s?\\d*\\w)"); 
 
 	public String genDescription() {
 		StringBuilder builder = new StringBuilder("");
@@ -105,7 +109,8 @@ public class Route {
 			}
 		}
 
-		return builder.toString();
+		return builder.toString().replace(" вулиця", ""); //TODO WTF!!!
+		//return builder.toString();
 	}
 
 	public String genPath() {

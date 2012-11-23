@@ -1,17 +1,21 @@
 package com.bossly.lviv.transit.services;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import android.app.IntentService;
+import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.widget.Toast;
 
 import com.bossly.lviv.transit.R;
+import com.bossly.lviv.transit.Route;
 import com.bossly.lviv.transit.activities.DashboardActivity;
 import com.bossly.lviv.transit.data.DatabaseSource;
 import com.bossly.lviv.transit.data.Main;
@@ -47,10 +51,13 @@ public class TransitService extends IntentService
 		mIsRunning = true;
 		NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this);
 		NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+		
+		Notification.Builder b;
 
 		notificationBuilder.setSmallIcon(R.drawable.ic_update_service);
-		notificationBuilder.setContentTitle("Transport");
-		notificationBuilder.setContentText("String updating");
+		notificationBuilder.setContentTitle(getString(R.string.app_name));
+		notificationBuilder.setContentText(getString(R.string.title_data_loading));
+		notificationBuilder.setAutoCancel(false);
 		notificationBuilder.setContentIntent(PendingIntent.getActivity(this, 0, new Intent(this,
 				DashboardActivity.class), 0));
 
@@ -60,7 +67,7 @@ public class TransitService extends IntentService
 		ArrayList<com.bossly.lviv.transit.data.Route> routes = Main.LoadData(null);
 
 		// save to db
-		DatabaseSource db = new DatabaseSource(getApplicationContext());
+		DatabaseSource db = new DatabaseSource(this);
 		db.open();
 		db.beginTransaction();
 		db.clear();
@@ -72,8 +79,8 @@ public class TransitService extends IntentService
 			// ignore routes out of city
 			if (route.insideCity(49.7422316, 23.8623047, 49.9529871, 24.2056274))
 			{
-
-				db.insertRoute(route.id, route.name, route.route, route.genDescription(), route.genPath());
+				if(db.insertRoute(route.id, route.name, route.route, route.genDescription(), route.genPath()) == -1)
+					Log.e(DashboardActivity.class.getName(), "Can't add item");
 				added++;
 
 				notificationBuilder.setProgress(routes.size(), index++, false);
@@ -87,6 +94,8 @@ public class TransitService extends IntentService
 		db.close();
 
 		notificationManager.cancel(UPDATE_NOTIFICATION_ID);
+		
+		LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(ACTION_UPDATED));
 		mIsRunning = false;
 	}
 }

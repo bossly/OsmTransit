@@ -54,7 +54,7 @@
         <provider
             android:name="com.bossly.lviv.transit.data.RoutesDataProvider"
             android:authorities="com.bossly.lviv.transit.provider"
-            android:enabled="true"
+            android:enabled="false"
             android:exported="false" >
         </provider>
     </application>

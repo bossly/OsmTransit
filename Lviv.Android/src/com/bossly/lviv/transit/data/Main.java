@@ -11,7 +11,8 @@ import java.util.ArrayList;
 
 import android.os.Environment;
 
-public class Main {
+public class Main
+{
 
 	public static boolean DEBUG_LOG = true;
 	public static boolean DEBUG_LOG_LEVEL1 = false;
@@ -24,23 +25,25 @@ public class Main {
 	 * 
 	 * @param args
 	 */
-	public static ArrayList<Route> LoadData(String savepath) {
+	public static ArrayList<Route> LoadData(String savepath)
+	{
 
 		String boundbox = "49.7422316,23.8623047,49.9529871,24.2056274";
 		String tags = "[\"route\"~\"trolleybus|tram|bus\"];>>;";
 		String meta = URLEncoder.encode("out meta;");
 
 		String link = String.format(
-				"http://overpass-api.de/api/interpreter?data=relation(%s)%s%s",
-				boundbox, tags, meta);
+		    "http://overpass-api.de/api/interpreter?data=relation(%s)%s%s",
+		    boundbox, tags, meta);
 
 		startTime = System.currentTimeMillis();
 
 		String temp_filename = Environment.getExternalStorageDirectory()
-				+ "/temp.osm";
+		    + "/temp.osm";
 
 		// try to download file
-		try {
+		try
+		{
 			URL urlLink = new URL(link);
 			URLConnection connection = urlLink.openConnection();
 			InputStream stream = connection.getInputStream();
@@ -49,7 +52,8 @@ public class Main {
 			byte[] buffer = new byte[1024];
 			int count = 0;
 
-			do {
+			do
+			{
 				writer.write(buffer, 0, count);
 				count = stream.read(buffer);
 			} while (count > 0);
@@ -58,7 +62,8 @@ public class Main {
 
 			writer.close();
 			stream.close();
-		} catch (Exception e) {
+		} catch (Exception e)
+		{
 			e.printStackTrace();
 		}
 
@@ -68,18 +73,23 @@ public class Main {
 		int count = args.length;
 		ArrayList<Route> routes = new ArrayList<Route>();
 
-		for (int i = 0; i < count; i++) {
+		for (int i = 0; i < count; i++)
+		{
 
 			File file = new File(args[i]);
 			URL url = null;
 
-			try {
+			try
+			{
 				url = file.toURI().toURL();
-			} catch (Exception e) {
+			}
+			catch (Exception e)
+			{
 			}
 
 			// get newest routes info
-			if (url != null) {
+			if (url != null)
+			{
 				ArrayList<Route> rts = api.parseTransitInfoByUrl(url);
 				routes.addAll(rts);
 			}

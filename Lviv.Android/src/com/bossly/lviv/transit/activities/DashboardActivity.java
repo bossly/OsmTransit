@@ -1,52 +1,52 @@
 package com.bossly.lviv.transit.activities;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
-import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.Loader;
-import android.util.Log;
+import android.support.v4.content.LocalBroadcastManager;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.Toast;
 
 import com.bossly.lviv.transit.CoreApplication;
 import com.bossly.lviv.transit.R;
 import com.bossly.lviv.transit.Route;
-import com.bossly.lviv.transit.data.DatabaseSource;
-import com.bossly.lviv.transit.data.Main;
 import com.bossly.lviv.transit.services.TransitService;
 
 public class DashboardActivity extends android.support.v4.app.FragmentActivity
-		implements OnClickListener, LoaderCallbacks<List<Route>> {
+    implements OnClickListener, LoaderCallbacks<List<Route>>
+{
 
 	public static final String PREF_LAST_UPDATE = "pref_last_date";
-
-	private SharedPreferences prefs;
 
 	private Handler m_runMap = null;
 
 	private View m_loading;
 
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
+	private BroadcastReceiver mServiceReceiver = new BroadcastReceiver()
+	{
+		@Override
+		public void onReceive(Context context, Intent intent)
+		{
+			// TODO
+			getSupportLoaderManager().getLoader(0).startLoading();
+		}
+	};
 
-		// TODO Auto-generated method stub
+	@Override
+	protected void onCreate(Bundle savedInstanceState)
+	{
 		super.onCreate(savedInstanceState);
 
 		setContentView(R.layout.dashboard);
-
-		prefs = PreferenceManager
-				.getDefaultSharedPreferences(getApplicationContext());
 
 		m_loading = findViewById(R.id.loading);
 
@@ -55,112 +55,108 @@ public class DashboardActivity extends android.support.v4.app.FragmentActivity
 		findViewById(R.id.button4).setOnClickListener(this);
 		findViewById(R.id.v_btn_update).setOnClickListener(this);
 
-		Intent intent = getIntent();
-		Bundle extras = intent.getExtras();
+		getSupportLoaderManager().initLoader(0, null, this);
 
-		if (extras != null) {
-			boolean download = extras.getBoolean("download", false);
-
-			if (download) {
-				Date version = new Date(extras.getLong("version"));
-				String path = new File(getCacheDir(), "transit_data.zip")
-						.getAbsolutePath();
-				new UpdateAsyncTask(version).execute(path);
-			} else {
-				// Prepare the loader. Either re-connect with an
-				// existing one, or start a new one.
-				getSupportLoaderManager().initLoader(0, null, this);
-			}
-		} else {
-			// Prepare the loader. Either re-connect with an
-			// existing one, or start a new one.
-			getSupportLoaderManager().initLoader(0, null, this);
-		}
+		LocalBroadcastManager.getInstance(this).registerReceiver(mServiceReceiver,
+		    new IntentFilter(TransitService.ACTION_UPDATED));
 	}
 
 	@Override
-	protected void onResume() {
-		// TODO Auto-generated method stub
+	protected void onResume()
+	{
 		super.onResume();
 
 		// start self-working service
-		//startService(new Intent(this, TransitService.class));
+		// startService(new Intent(this, TransitService.class));
 	}
 
 	@Override
-	protected void onDestroy() {
-		// TODO Auto-generated method stub
+	protected void onDestroy()
+	{
 		super.onDestroy();
 
 		getSupportLoaderManager().destroyLoader(0);
+		LocalBroadcastManager.getInstance(this)
+		    .unregisterReceiver(mServiceReceiver);
 	}
 
 	@Override
-	public void onClick(View v) {
-
+	public void onClick(View v)
+	{
 		CoreApplication app = (CoreApplication) getApplication();
 
 		// NEAR
-		if (v.getId() == R.id.button1) {
+		if (v.getId() == R.id.button1)
+		{
 			final Intent i = new Intent(this, NearRoutesActivity.class);
 
-			if (app.data == null) {
-				m_runMap = new Handler() {
-					public void handleMessage(android.os.Message msg) {
+			if (app.data == null)
+			{
+				m_runMap = new Handler()
+				{
+					public void handleMessage(android.os.Message msg)
+					{
 						startActivity(i);
 					};
 				};
-			} else {
+			} else
+			{
 				startActivity(i);
 			}
 		}
 		// MAP
-		else if (v.getId() == R.id.button3) {
-			if (app.data == null) {
-				m_runMap = new Handler() {
-					public void handleMessage(android.os.Message msg) {
+		else if (v.getId() == R.id.button3)
+		{
+			if (app.data == null)
+			{
+				m_runMap = new Handler()
+				{
+					public void handleMessage(android.os.Message msg)
+					{
 						startActivity(new Intent(DashboardActivity.this,
-								RouteMapActivity.class));
+						    RouteMapActivity.class));
 					};
 				};
-			} else {
+			} else
+			{
 				startActivity(new Intent(this, RouteMapActivity.class));
 			}
 		}
 		// SETTINGS
-		else if (v.getId() == R.id.button4) {
+		else if (v.getId() == R.id.button4)
+		{
 			startActivity(new Intent(this, SettingsActivity.class));
 		}
 		// Check Updates
-		else if (v.getId() == R.id.v_btn_update) {
+		else if (v.getId() == R.id.v_btn_update)
+		{
 			// clear last time update
-//			Date version = new Date(System.currentTimeMillis());
-//			String path = new File(getCacheDir(), "transit_data.zip")
-//					.getAbsolutePath();
-//			new UpdateAsyncTask(version).execute(path);
-			
+			// Date version = new Date(System.currentTimeMillis());
+			// String path = new File(getCacheDir(), "transit_data.zip")
+			// .getAbsolutePath();
+			// new UpdateAsyncTask(version).execute(path);
+
 			startService(new Intent(this, TransitService.class));
 		}
 	}
 
 	/* LoaderCallbacks<List<Route>> */
-
 	@Override
-	public Loader<List<Route>> onCreateLoader(int arg0, Bundle arg1) {
+	public Loader<List<Route>> onCreateLoader(int arg0, Bundle arg1)
+	{
 		CoreApplication app = (CoreApplication) getApplication();
 
 		return app.m_loader;
 	}
 
 	@Override
-	public void onLoadFinished(Loader<List<Route>> arg0, List<Route> data) {
+	public void onLoadFinished(Loader<List<Route>> arg0, List<Route> data)
+	{
 		CoreApplication app = (CoreApplication) getApplication();
 		app.data = data;
 
-		Intent intent = getIntent();
-		intent.putExtra("download", false);
-
-		if (m_runMap != null) {
+		if (m_runMap != null)
+		{
 			m_runMap.sendEmptyMessage(0);
 			m_runMap = null;
 		}
@@ -169,95 +165,7 @@ public class DashboardActivity extends android.support.v4.app.FragmentActivity
 	}
 
 	@Override
-	public void onLoaderReset(Loader<List<Route>> arg0) {
+	public void onLoaderReset(Loader<List<Route>> arg0)
+	{
 	}
-
-	public static boolean isLoading = false;
-
-	class UpdateAsyncTask extends AsyncTask<String, Integer, Boolean> {
-
-		private Date m_version;
-
-		public UpdateAsyncTask(Date version) {
-			m_version = version;
-		}
-
-		ProgressDialog dialog;
-
-		@Override
-		protected void onPreExecute() {
-			// TODO Auto-generated method stub
-			super.onPreExecute();
-
-			dialog = new ProgressDialog(DashboardActivity.this);
-			dialog.setMessage("Updating");
-			dialog.show();
-		}
-
-		@Override
-		protected Boolean doInBackground(String... params) {
-
-			boolean success = false;
-
-			if (isLoading == false) {
-				isLoading = true;
-				String toCache = params[0];
-
-				// loading from web
-				ArrayList<com.bossly.lviv.transit.data.Route> routes = Main
-						.LoadData(toCache);
-
-				// save to db
-				DatabaseSource db = new DatabaseSource(getApplicationContext());
-				db.open();
-				db.clear();
-				int added = 0;
-
-				for (com.bossly.lviv.transit.data.Route route : routes) {
-
-					// ignore routes out of city
-					if (route.insideCity(49.7422316, 23.8623047, 49.9529871,
-							24.2056274)) {
-
-						db.insertRoute(route.id, route.name, route.route,
-								route.genDescription(), route.genPath());
-						added++;
-					}
-				}
-
-				Log.d(DashboardActivity.class.getName(),
-						"Routes addded to db: " + added);
-
-				db.close();
-
-				success = true;
-
-				isLoading = false;
-			}
-
-			return success;
-		}
-
-		@Override
-		protected void onPostExecute(Boolean result) {
-
-			dialog.dismiss();
-
-			// if download successfully-> save version
-			if (result && m_version != null) {
-				prefs.edit().putLong(PREF_LAST_UPDATE, m_version.getTime())
-						.commit();
-
-				// notify about data change
-				Toast.makeText(getApplicationContext(), R.string.data_updated,
-						Toast.LENGTH_SHORT).show();
-			}
-
-			// Prepare the loader. Either re-connect with an
-			// existing one, or start a new one.
-			getSupportLoaderManager().initLoader(0, null,
-					DashboardActivity.this);
-		}
-	}
-
 }
