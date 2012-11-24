@@ -6,6 +6,7 @@
     android:orientation="vertical" >
 
     <LinearLayout
+        android:id="@+id/v_search_container"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:background="@android:drawable/bottom_bar"

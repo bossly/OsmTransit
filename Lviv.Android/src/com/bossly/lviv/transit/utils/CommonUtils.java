@@ -1,6 +1,7 @@
 package com.bossly.lviv.transit.utils;
 
 import android.text.SpannableString;
+import android.text.TextUtils;
 import android.text.style.BackgroundColorSpan;
 
 public final class CommonUtils
@@ -15,6 +16,9 @@ public final class CommonUtils
 		for (int i = 0; i < words.length; i++)
     {
 			String word = words[0].toLowerCase();  
+			
+			if(TextUtils.isEmpty(word))
+				throw new IllegalArgumentException("words");
 			
 			for (int p = text.indexOf(word); p != -1; p = text.indexOf(word, p + 1))
 	    {

@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
+import android.database.DatabaseUtils;
 import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationListener;
@@ -20,13 +21,18 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v4.database.DatabaseUtilsCompat;
+import android.support.v4.widget.CursorAdapter;
+import android.support.v4.widget.SearchViewCompat;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -47,7 +53,7 @@ import com.bossly.lviv.transit.RoutesLoader;
 import com.bossly.lviv.transit.activities.RouteMapActivity;
 import com.bossly.lviv.transit.data.RoutesContract;
 
-public class NearRoutesFragment extends Fragment implements LoaderCallbacks<List<Route>>, TextWatcher,
+public class NearRoutesFragment extends Fragment implements LoaderCallbacks<Cursor>, TextWatcher,
 		OnClickListener, OnItemClickListener, LocationListener,
 		android.widget.RadioGroup.OnCheckedChangeListener
 {
@@ -72,6 +78,10 @@ public class NearRoutesFragment extends Fragment implements LoaderCallbacks<List
 
 	private LocationManager m_manager;
 	
+	private RouteCursorAdapter mCursorAdapter;
+	
+	private String mCursorFilter;
+	
 	@Override
 	public void onAttach(Activity activity)
 	{
@@ -89,16 +99,14 @@ public class NearRoutesFragment extends Fragment implements LoaderCallbacks<List
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
 	{
-
 		View content = inflater.inflate(R.layout.fr_near_routes, container, false);
-
+		
 		vEditText = (EditText) content.findViewById(R.id.editText1);
 		vListView = (ListView) content.findViewById(R.id.listView1);
 		RadioGroup radio = (RadioGroup) content.findViewById(R.id.radioGroup1);
 		radio.setOnCheckedChangeListener(this);
 
 		vEditText.addTextChangedListener(this);
-
 		vEditText.setOnEditorActionListener(new OnEditorActionListener()
 		{
 
@@ -136,6 +144,7 @@ public class NearRoutesFragment extends Fragment implements LoaderCallbacks<List
 		m_adapter = new RouteAdapter(getActivity(), m_data);
 		vListView.setAdapter(m_adapter);
 
+	
 		return content;
 	}
 
@@ -197,21 +206,19 @@ public class NearRoutesFragment extends Fragment implements LoaderCallbacks<List
 		};
 	};
 
-	private Message msg;
-
 	@Override
 	public void onTextChanged(CharSequence s, int start, int before, int count)
 	{
-		if (msg != null)
+		mCursorFilter = s.toString();
+		getLoaderManager().restartLoader(0, null, this);
+		
+		if(TextUtils.isEmpty(mCursorFilter))
 		{
-			handler.removeMessages(0);
+			mCursorAdapter.setFilterHighlight(null);
 		}
-
-		if (m_adapter != null)
+		else
 		{
-			msg = handler.obtainMessage(0, s.toString());
-			handler.sendMessageDelayed(msg, 100);
-			m_adapter.getFilter().filter( s );
+			mCursorAdapter.setFilterHighlight(mCursorFilter.split(" "));
 		}
 	}
 
@@ -401,21 +408,35 @@ public class NearRoutesFragment extends Fragment implements LoaderCallbacks<List
 	}
 
 	@Override
-	public Loader<List<Route>> onCreateLoader(int id, Bundle args)
+	public Loader<Cursor> onCreateLoader(int id, Bundle args)
 	{
-		return new RoutesLoader(getActivity());
+		String selection = null;
+		
+		if(!TextUtils.isEmpty(mCursorFilter))
+		{
+			selection = String.format("upper(%s) LIKE upper('%%%s%%')", RoutesContract.RouteData.DIRECTION, mCursorFilter);
+		}
+		
+		return new CursorLoader(getActivity(), RoutesContract.RouteData.CONTENT_URI, null, selection, null, null);
 	}
 
 
 	@Override
-  public void onLoadFinished(Loader<List<Route>> loader, List<Route> result)
+  public void onLoadFinished(Loader<Cursor> loader, Cursor result)
   {
-		m_adapter = new RouteAdapter(getActivity(), result);
-		vListView.setAdapter(m_adapter);
+		if(mCursorAdapter == null)
+		{
+			mCursorAdapter = new RouteCursorAdapter(getActivity(), result, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
+			vListView.setAdapter(mCursorAdapter);
+		}
+		else
+		{
+			mCursorAdapter.swapCursor(result);
+		}
   }
 
 	@Override
-  public void onLoaderReset(Loader<List<Route>> loader)
+  public void onLoaderReset(Loader<Cursor> loader)
   {
   }
 }
