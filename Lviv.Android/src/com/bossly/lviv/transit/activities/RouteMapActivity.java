@@ -1,11 +1,9 @@
 package com.bossly.lviv.transit.activities;
 
-import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,8 +17,10 @@ import org.mapsforge.android.maps.overlay.OverlayWay;
 import org.mapsforge.android.maps.overlay.WayOverlay;
 import org.mapsforge.core.GeoPoint;
 
+import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Paint.Style;
@@ -29,8 +29,10 @@ import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.database.DatabaseUtilsCompat;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -44,13 +46,17 @@ import com.bossly.lviv.transit.CoreApplication;
 import com.bossly.lviv.transit.GeoUtils;
 import com.bossly.lviv.transit.R;
 import com.bossly.lviv.transit.Route;
+import com.bossly.lviv.transit.data.RoutesContract.RouteData;
 import com.bossly.lviv.transit.services.TrackingService;
+import com.bossly.lviv.transit.utils.CommonUtils;
 
 public class RouteMapActivity extends MapActivity implements OnClickListener, LocationListener, OnCheckedChangeListener
 {  
   public static final double MAX_DISTANCE = 300; // meters
   
   public static final String EXTRA_ROUTE = "extra_route";
+
+  public static final String EXTRA_ROUTE_ID = "extra_route_id";
   
   private Button btnRoute;
   
@@ -84,19 +90,13 @@ public class RouteMapActivity extends MapActivity implements OnClickListener, Lo
       // copy to cache
       try
       {
-        FileOutputStream fos = new FileOutputStream( map_cache, false );
-        OutputStream os = new BufferedOutputStream( fos );
-        
         InputStream in = getAssets().open( "lviv.map" );
+        FileOutputStream fos = new FileOutputStream( map_cache, false );
         
-        byte[] buffer = new byte[ 1024 ];
-        int byteRead = 0;
-        while( ( byteRead = in.read( buffer ) ) != -1 )
-        {
-          os.write( buffer, 0, byteRead );
-        }
+        CommonUtils.copyData(in, fos);
         
-        os.close();
+        fos.close();
+        in.close();
       }
       catch( IOException e )
       {
@@ -129,11 +129,11 @@ public class RouteMapActivity extends MapActivity implements OnClickListener, Lo
     mapView.getOverlays().add( overlayRoutes );
     
     Intent intent = getIntent();
-    Route currentRoute = ( Route )intent.getSerializableExtra( EXTRA_ROUTE );
+    long routeId = intent.getLongExtra(EXTRA_ROUTE_ID, -1);
     
-    if( currentRoute != null )
+    if( routeId != -1 )
     {
-      showRoute( currentRoute );
+      showRoute( routeId );
     }
     else
     {
@@ -408,37 +408,40 @@ public class RouteMapActivity extends MapActivity implements OnClickListener, Lo
     @Override
     protected GeoPoint doInBackground( Object ... params )
     {
-      CoreApplication app = ( CoreApplication )getApplication();
-      List<Route> data = app.data;
-      
-      GeoPoint st = start.item.getPoint();
-      GeoPoint st2 = end.item.getPoint();
-      
-      ArrayList<Route> f1 = GeoUtils.filterRoutes( data, st.getLatitude(), st.getLongitude(), MAX_DISTANCE );
-      ArrayList<Route> f2 = GeoUtils.filterRoutes( f1, st2.getLatitude(), st2.getLongitude(), MAX_DISTANCE );
-      
-      for( Route route : f2 )
-      {
-        this.publishProgress( route );
-      }
-      
-      int lat1 = st.latitudeE6;
-      int lon1 = st.longitudeE6;
-      
-      int lat2 = st2.latitudeE6;
-      int lon2 = st2.longitudeE6;
-      
-      Rect r = new Rect( lat1, lon1, lat1, lon1 );
-      r.union( lat2, lon2, lat2, lon2 );
-      
-      if( f2.size() > 0 )
-      {
-        return new GeoPoint( r.centerX(), r.centerY() );
-      }
-      else
-      {
-        return null;
-      }
+//TODO
+//      CoreApplication app = ( CoreApplication )getApplication();
+//      List<Route> data = app.data;
+//      
+//      GeoPoint st = start.item.getPoint();
+//      GeoPoint st2 = end.item.getPoint();
+//      
+//      ArrayList<Route> f1 = GeoUtils.filterRoutes( data, st.getLatitude(), st.getLongitude(), MAX_DISTANCE );
+//      ArrayList<Route> f2 = GeoUtils.filterRoutes( f1, st2.getLatitude(), st2.getLongitude(), MAX_DISTANCE );
+//      
+//      for( Route route : f2 )
+//      {
+//        this.publishProgress( route );
+//      }
+//      
+//      int lat1 = st.latitudeE6;
+//      int lon1 = st.longitudeE6;
+//      
+//      int lat2 = st2.latitudeE6;
+//      int lon2 = st2.longitudeE6;
+//      
+//      Rect r = new Rect( lat1, lon1, lat1, lon1 );
+//      r.union( lat2, lon2, lat2, lon2 );
+//      
+//      if( f2.size() > 0 )
+//      {
+//        return new GeoPoint( r.centerX(), r.centerY() );
+//      }
+//      else
+//      {
+//        return null;
+//      }
+    	
+    	return null;
     }
     
     @Override
@@ -658,22 +661,16 @@ public class RouteMapActivity extends MapActivity implements OnClickListener, Lo
   @Override
   public void onProviderDisabled( String provider )
   {
-    // TODO Auto-generated method stub
-    
   }
   
   @Override
   public void onProviderEnabled( String provider )
   {
-    // TODO Auto-generated method stub
-    
   }
   
   @Override
   public void onStatusChanged( String provider, int status, Bundle extras )
   {
-    // TODO Auto-generated method stub
-    
   }
   
   /* OnCheckedChangeListener */
@@ -686,15 +683,20 @@ public class RouteMapActivity extends MapActivity implements OnClickListener, Lo
       RadioButton btn = ( RadioButton )group.findViewById( checkedId );
       Route route = ( Route )btn.getTag();
       
-      showRoute( route );
+      //showRoute( route );
     }
   }
   
-  private void showRoute( Route route )
+  private void showRoute( long id )
   {
-    setRoutePath( route.path );
-    current_route = route;
-    
-    btnRoute.setText( route.toString() );
+  	Uri routeUri = ContentUris.withAppendedId(RouteData.CONTENT_URI, id);  	
+  	Cursor cursor = getContentResolver().query(routeUri, new String[]{ RouteData.PATH }, null, null, null);
+  	
+  	if(cursor.moveToFirst())
+  	{
+	    setRoutePath( cursor.getString(0) );
+  	}
+  	
+  	cursor.close();
   }
 }

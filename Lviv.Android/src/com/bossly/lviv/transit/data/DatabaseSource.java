@@ -10,6 +10,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 import com.bossly.lviv.transit.Route;
+import com.bossly.lviv.transit.data.RoutesDataProvider.DatabaseHelper;
 
 public class DatabaseSource {
 
@@ -83,6 +84,7 @@ public class DatabaseSource {
 		values.put(DatabaseHelper.COLUMN_ROUTE_TYPE, type);
 		values.put(DatabaseHelper.COLUMN_ROUTE_DIRECTION, desc);
 		values.put(DatabaseHelper.COLUMN_ROUTE_PATH, path);
+		values.put(DatabaseHelper.COLUMN_ROUTE_SEARCH, desc.toLowerCase());
 
 		return database.insert(DatabaseHelper.TABLE_ROUTES, null, values);
 	}

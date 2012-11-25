@@ -62,7 +62,12 @@ public class TransitService extends IntentService
 				DashboardActivity.class), 0));
 
 		notificationBuilder.setProgress(0, 0, true);
-		notificationManager.notify(UPDATE_NOTIFICATION_ID, notificationBuilder.build());
+		
+		Notification n = notificationBuilder.build();
+		
+		n.flags |= Notification.FLAG_NO_CLEAR;
+		
+		notificationManager.notify(UPDATE_NOTIFICATION_ID, n);
 
 		ArrayList<com.bossly.lviv.transit.data.Route> routes = Main.LoadData(null);
 

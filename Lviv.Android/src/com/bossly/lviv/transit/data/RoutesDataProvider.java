@@ -1,5 +1,7 @@
 package com.bossly.lviv.transit.data;
 
+import java.util.Locale;
+
 import android.content.ContentProvider;
 import android.content.ContentUris;
 import android.content.ContentValues;
@@ -8,6 +10,7 @@ import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.database.sqlite.SQLiteProgram;
 import android.net.Uri;
 import android.support.v4.database.DatabaseUtilsCompat;
 import android.util.Log;
@@ -20,7 +23,7 @@ public class RoutesDataProvider extends ContentProvider
 
 		private static final String DATABASE_NAME = "routes.db";
 
-		private static final int DATABASE_VERSION = 2;
+		private static final int DATABASE_VERSION = 4;
 
 		public static final String TABLE_ROUTES = "routes";
 
@@ -38,13 +41,18 @@ public class RoutesDataProvider extends ContentProvider
 
 		public static final String COLUMN_ROUTE_PATH = "path";
 
+		public static final String COLUMN_ROUTE_SEARCH = "search";
+
 		/* Initialization */
 
 		// Database creation sql statement
 		private static final String DATABASE_CREATE = "create table " + TABLE_ROUTES + "(" + COLUMN_ID
 				+ " integer primary key autoincrement, " + COLUMN_ROUTE_ID + " text not null, "
 				+ COLUMN_ROUTE_NAME + " text, " + COLUMN_ROUTE_TYPE + " text, " + COLUMN_ROUTE_DIRECTION
-				+ " text, " + COLUMN_ROUTE_PATH + " text " + ");";
+				+ " text, " + COLUMN_ROUTE_SEARCH + " text, " + COLUMN_ROUTE_PATH + " text " + ");";
+
+		private static final String DATABASE_POINT_CREATE = "create table points ("
+				+ "_id integer primary key autoincrement, latitude FLOAT , longitude FLOAT, route_id INTEGER);";
 
 		public DatabaseHelper(Context context)
 		{
@@ -67,7 +75,6 @@ public class RoutesDataProvider extends ContentProvider
 
 			onCreate(db);
 		}
-
 	}
 
 	private final static UriMatcher MATCHER = new UriMatcher(0);
@@ -77,6 +84,8 @@ public class RoutesDataProvider extends ContentProvider
 	{
 		MATCHER.addURI(RoutesContract.AUTHORITY, "routes", 0);
 		MATCHER.addURI(RoutesContract.AUTHORITY, "routes/#", 1);
+		MATCHER.addURI(RoutesContract.AUTHORITY, "points", 2);
+		MATCHER.addURI(RoutesContract.AUTHORITY, "points/#", 3);
 	}
 
 	@Override

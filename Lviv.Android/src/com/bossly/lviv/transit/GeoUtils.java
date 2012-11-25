@@ -187,7 +187,7 @@ public class GeoUtils {
 			double tt = Math.acos(t1 + t2 + t3);
 
 			double distance = R * tt;
-
+			
 			return distance;
 		}
 

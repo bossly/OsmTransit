@@ -1,7 +1,6 @@
 package com.bossly.lviv.transit.fragments;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import android.app.Activity;
 import android.app.AlertDialog.Builder;
@@ -9,7 +8,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
-import android.database.DatabaseUtils;
 import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationListener;
@@ -21,9 +19,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import android.support.v4.database.DatabaseUtilsCompat;
 import android.support.v4.widget.CursorAdapter;
-import android.support.v4.widget.SearchViewCompat;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -32,12 +28,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.view.ViewGroup.LayoutParams;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.EditText;
-import android.widget.FilterQueryProvider;
 import android.widget.ListView;
 import android.widget.RadioGroup;
 import android.widget.TextView;
@@ -49,7 +43,6 @@ import com.bossly.lviv.transit.R;
 import com.bossly.lviv.transit.Route;
 import com.bossly.lviv.transit.RouteAdapter;
 import com.bossly.lviv.transit.RouteCursorAdapter;
-import com.bossly.lviv.transit.RoutesLoader;
 import com.bossly.lviv.transit.activities.RouteMapActivity;
 import com.bossly.lviv.transit.data.RoutesContract;
 
@@ -62,8 +55,6 @@ public class NearRoutesFragment extends Fragment implements LoaderCallbacks<Curs
 
 	public ListView vListView;
 
-	public RouteAdapter m_adapter;
-
 	private int selected = 0;
 
 	private int position = 0;
@@ -72,7 +63,6 @@ public class NearRoutesFragment extends Fragment implements LoaderCallbacks<Curs
 
 	private TextView m_textStatus;
 
-	private ArrayList<Route> m_data = null;
 
 	private Location m_location = null;
 
@@ -140,9 +130,7 @@ public class NearRoutesFragment extends Fragment implements LoaderCallbacks<Curs
 
 		CoreApplication app = (CoreApplication) getActivity().getApplication();
 
-		m_data = new ArrayList<Route>(app.data);
-		m_adapter = new RouteAdapter(getActivity(), m_data);
-		vListView.setAdapter(m_adapter);
+
 
 	
 		return content;
@@ -192,19 +180,6 @@ public class NearRoutesFragment extends Fragment implements LoaderCallbacks<Curs
 	{
 	}
 
-	Handler handler = new Handler()
-	{
-		public void handleMessage(Message msg)
-		{
-			if (msg.obj != null)
-			{
-				if (m_adapter != null)
-				{
-					m_adapter.getFilter().filter(msg.obj.toString());
-				}
-			}
-		};
-	};
 
 	@Override
 	public void onTextChanged(CharSequence s, int start, int before, int count)
@@ -231,18 +206,12 @@ public class NearRoutesFragment extends Fragment implements LoaderCallbacks<Curs
 	/* OnItemClickListener */
 
 	@Override
-	public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3)
+	public void onItemClick(AdapterView<?> adapterView, View view, int position, long id)
 	{
 		hideKeyboard();
 
-		scroll_y = vListView.getChildAt(0).getTop();
-		position = vListView.getFirstVisiblePosition();
-		selected = arg2;
-
-		Route route = (Route) arg0.getItemAtPosition(arg2);
-
 		Intent intent = new Intent(getActivity(), RouteMapActivity.class);
-		intent.putExtra(RouteMapActivity.EXTRA_ROUTE, route);
+		intent.putExtra(RouteMapActivity.EXTRA_ROUTE_ID, id);
 		startActivity(intent);
 	}
 
@@ -335,7 +304,6 @@ public class NearRoutesFragment extends Fragment implements LoaderCallbacks<Curs
 				m_textStatus.setText(String.format("Точність: < %.1f метрів", accuracy));
 			}
 
-			m_adapter.updateByLocation(m_location);
 
 			if (vListView != null)
 			{
@@ -397,14 +365,6 @@ public class NearRoutesFragment extends Fragment implements LoaderCallbacks<Curs
 			startDetermineUserLocation();
 		}
 
-		// update list
-		m_adapter.updateByLocation(loc);
-
-		if (vEditText != null)
-		{
-			m_adapter.getFilter().filter(vEditText.getText().toString());
-		}
-
 	}
 
 	@Override
@@ -414,7 +374,7 @@ public class NearRoutesFragment extends Fragment implements LoaderCallbacks<Curs
 		
 		if(!TextUtils.isEmpty(mCursorFilter))
 		{
-			selection = String.format("upper(%s) LIKE upper('%%%s%%')", RoutesContract.RouteData.DIRECTION, mCursorFilter);
+			selection = String.format("%s LIKE '%%%s%%'", RoutesContract.RouteData.SEARCH, mCursorFilter.toLowerCase());
 		}
 		
 		return new CursorLoader(getActivity(), RoutesContract.RouteData.CONTENT_URI, null, selection, null, null);

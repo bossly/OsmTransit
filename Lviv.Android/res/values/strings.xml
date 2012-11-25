@@ -40,4 +40,6 @@
 
     <string name="title_data_loading">Loading data...</string>
 
+    <string name="title_update">Download osm data</string>
+
 </resources>

@@ -1,5 +1,9 @@
 package com.bossly.lviv.transit.utils;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+
 import android.text.SpannableString;
 import android.text.TextUtils;
 import android.text.style.BackgroundColorSpan;
@@ -27,5 +31,21 @@ public final class CommonUtils
     }
 		
 		return builder;
+	}
+
+	public static void copyData(InputStream in, OutputStream out) throws IOException 
+	{
+		copyData(in, out, 1024);		
+	}
+
+	public static void copyData(InputStream in, OutputStream out, int bufferSize ) throws IOException 
+	{
+		byte[] buf = new byte[bufferSize];
+		int length = 0; 
+
+		while((length = in.read(buf)) > 0)
+		{
+			out.write(buf, 0, length);
+		}
 	}
 }
