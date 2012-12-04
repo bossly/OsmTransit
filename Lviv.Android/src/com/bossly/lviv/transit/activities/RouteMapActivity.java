@@ -355,7 +355,6 @@ public class RouteMapActivity extends MapActivity implements OnClickListener, Lo
     @Override
     protected void onPreExecute()
     {
-      // TODO Auto-generated method stub
       super.onPreExecute();
       
       btnRoute.setText( R.string.lbl_searching );

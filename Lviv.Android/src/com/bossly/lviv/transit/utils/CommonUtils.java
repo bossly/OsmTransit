@@ -3,6 +3,7 @@ package com.bossly.lviv.transit.utils;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Locale;
 
 import android.text.SpannableString;
 import android.text.TextUtils;
@@ -12,13 +13,18 @@ public final class CommonUtils
 {
 	public static CharSequence highlight(String text, String[] words, int color)
 	{
+		return highlight(text, words, color, Locale.getDefault());
+	}
+	
+	public static CharSequence highlight(String text, String[] words, int color, Locale locale)
+	{
 		SpannableString builder = new SpannableString(text);
 		
-		text = text.toLowerCase();
+		text = text.toLowerCase(locale);
 		
 		for (int i = 0; i < words.length; i++)
     {
-			String word = words[i].toLowerCase();  
+			String word = words[i].toLowerCase(locale);  
 			
 			if(TextUtils.isEmpty(word))
 				throw new IllegalArgumentException("words");

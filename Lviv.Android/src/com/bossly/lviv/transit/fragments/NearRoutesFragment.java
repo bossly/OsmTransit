@@ -33,7 +33,6 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 
-import com.bossly.lviv.transit.CoreApplication;
 import com.bossly.lviv.transit.GeoUtils;
 import com.bossly.lviv.transit.R;
 import com.bossly.lviv.transit.RouteCursorAdapter;

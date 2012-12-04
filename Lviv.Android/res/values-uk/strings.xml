@@ -19,7 +19,9 @@
     <string name="filter_hint">наукова центр ашан …</string>
     <string name="button_direction_to">До</string>
     <string name="button_direction_from">Від</string>
-
+    <string name="title_update">Обновити дані</string>
+    <string name="title_data_loading">Загрузка даних...</string>
+    
     <!-- preference -->
 
     <string name="pref_check_summary">Провіряти оновлення з мережі при запуску програми</string>
