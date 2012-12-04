@@ -32,7 +32,7 @@
         android:theme="@android:style/Theme.Black.NoTitleBar" >
         <activity
             android:name="com.bossly.lviv.transit.activities.DashboardActivity"
-            android:screenOrientation="portrait" >
+            android:screenOrientation="portrait" android:launchMode="singleInstance">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

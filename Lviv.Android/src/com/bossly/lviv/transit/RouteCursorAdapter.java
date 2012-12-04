@@ -1,23 +1,20 @@
 package com.bossly.lviv.transit;
 
-import com.bossly.lviv.transit.data.RoutesContract;
-import com.bossly.lviv.transit.utils.CommonUtils;
-
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.support.v4.widget.CursorAdapter;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.bossly.lviv.transit.data.RoutesContract;
+import com.bossly.lviv.transit.utils.CommonUtils;
+
 public class RouteCursorAdapter extends CursorAdapter
 {
 	private int _nameIndex;
-	private int _typeIndex;
-	private int _numberIndex;
 	private int _descIndex;
 
 	private String[] mFilters = null;
@@ -27,8 +24,8 @@ public class RouteCursorAdapter extends CursorAdapter
 		super(context, c, flags);
 
 		_nameIndex = c.getColumnIndex(RoutesContract.RouteData.NAME);
-		_typeIndex = c.getColumnIndex(RoutesContract.RouteData.TYPE);
-		_numberIndex = c.getColumnIndex(RoutesContract.RouteData.UID);
+		c.getColumnIndex(RoutesContract.RouteData.TYPE);
+		c.getColumnIndex(RoutesContract.RouteData.UID);
 		_descIndex = c.getColumnIndex(RoutesContract.RouteData.DIRECTION);
 	}
 

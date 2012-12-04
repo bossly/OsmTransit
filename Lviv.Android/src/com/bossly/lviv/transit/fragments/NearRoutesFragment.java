@@ -1,7 +1,5 @@
 package com.bossly.lviv.transit.fragments;
 
-import java.util.ArrayList;
-
 import android.app.Activity;
 import android.app.AlertDialog.Builder;
 import android.content.Context;
@@ -13,8 +11,6 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.CursorLoader;
@@ -40,8 +36,6 @@ import android.widget.TextView.OnEditorActionListener;
 import com.bossly.lviv.transit.CoreApplication;
 import com.bossly.lviv.transit.GeoUtils;
 import com.bossly.lviv.transit.R;
-import com.bossly.lviv.transit.Route;
-import com.bossly.lviv.transit.RouteAdapter;
 import com.bossly.lviv.transit.RouteCursorAdapter;
 import com.bossly.lviv.transit.activities.RouteMapActivity;
 import com.bossly.lviv.transit.data.RoutesContract;
@@ -50,7 +44,6 @@ public class NearRoutesFragment extends Fragment implements LoaderCallbacks<Curs
 		OnClickListener, OnItemClickListener, LocationListener,
 		android.widget.RadioGroup.OnCheckedChangeListener
 {
-
 	public EditText vEditText;
 
 	public ListView vListView;
@@ -62,7 +55,6 @@ public class NearRoutesFragment extends Fragment implements LoaderCallbacks<Curs
 	private int scroll_y;
 
 	private TextView m_textStatus;
-
 
 	private Location m_location = null;
 
@@ -128,11 +120,6 @@ public class NearRoutesFragment extends Fragment implements LoaderCallbacks<Curs
 			selected = savedInstanceState.getInt("selected");
 		}
 
-		CoreApplication app = (CoreApplication) getActivity().getApplication();
-
-
-
-	
 		return content;
 	}
 
@@ -374,7 +361,22 @@ public class NearRoutesFragment extends Fragment implements LoaderCallbacks<Curs
 		
 		if(!TextUtils.isEmpty(mCursorFilter))
 		{
-			selection = String.format("%s LIKE '%%%s%%'", RoutesContract.RouteData.SEARCH, mCursorFilter.toLowerCase());
+			String[] filters = mCursorFilter.split(" ");
+			StringBuilder stringBuilder = new StringBuilder();
+			
+			for (int i = 0; i < filters.length; i++)
+      {
+	      if(i != 0)
+	  			stringBuilder.append(" AND ");
+	      
+	      stringBuilder.append("(");
+	      stringBuilder.append(RoutesContract.RouteData.SEARCH);
+	      stringBuilder.append(" LIKE '%");
+	      stringBuilder.append(filters[i]);
+	      stringBuilder.append("%')");
+      }
+
+			selection = stringBuilder.toString();
 		}
 		
 		return new CursorLoader(getActivity(), RoutesContract.RouteData.CONTENT_URI, null, selection, null, null);

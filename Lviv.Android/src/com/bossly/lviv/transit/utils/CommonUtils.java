@@ -13,20 +13,19 @@ public final class CommonUtils
 	public static CharSequence highlight(String text, String[] words, int color)
 	{
 		SpannableString builder = new SpannableString(text);
-		BackgroundColorSpan spanColor = new BackgroundColorSpan(color);
 		
 		text = text.toLowerCase();
 		
 		for (int i = 0; i < words.length; i++)
     {
-			String word = words[0].toLowerCase();  
+			String word = words[i].toLowerCase();  
 			
 			if(TextUtils.isEmpty(word))
 				throw new IllegalArgumentException("words");
 			
 			for (int p = text.indexOf(word); p != -1; p = text.indexOf(word, p + 1))
 	    {
-				builder.setSpan(spanColor, p, p + word.length(), 0);			
+				builder.setSpan(new BackgroundColorSpan(color), p, p + word.length(), 0);			
 	    }
     }
 		

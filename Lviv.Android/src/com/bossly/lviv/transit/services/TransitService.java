@@ -1,7 +1,8 @@
 package com.bossly.lviv.transit.services;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
-import java.util.List;
 
 import android.app.IntentService;
 import android.app.Notification;
@@ -9,19 +10,25 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.widget.Toast;
 
 import com.bossly.lviv.transit.R;
-import com.bossly.lviv.transit.Route;
 import com.bossly.lviv.transit.activities.DashboardActivity;
 import com.bossly.lviv.transit.data.DatabaseSource;
-import com.bossly.lviv.transit.data.Main;
+import com.bossly.lviv.transit.data.Route;
+import com.bossly.lviv.transit.data.WebAPI;
 
 public class TransitService extends IntentService
 {
+	private final static String URL_FORMAT = "http://overpass-api.de/api/interpreter?data=relation(%s)%s%s";
+	private final static String ROUTE_BOUNDS_BOX = "49.7422316,23.8623047,49.9529871,24.2056274";
+	private final static String ROUTE_TAGS = "[\"route\"~\"trolleybus|tram|bus\"];>>;";
+	private final static String ROUTE_META = Uri.encode("out meta;");
+
 	public static final int UPDATE_NOTIFICATION_ID = 0x01;
 	public final static String ACTION_UPDATED = "TransitService.updated";
 	
@@ -52,8 +59,6 @@ public class TransitService extends IntentService
 		NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this);
 		NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 		
-		Notification.Builder b;
-
 		notificationBuilder.setSmallIcon(R.drawable.ic_update_service);
 		notificationBuilder.setContentTitle(getString(R.string.app_name));
 		notificationBuilder.setContentText(getString(R.string.title_data_loading));
@@ -69,34 +74,47 @@ public class TransitService extends IntentService
 		
 		notificationManager.notify(UPDATE_NOTIFICATION_ID, n);
 
-		ArrayList<com.bossly.lviv.transit.data.Route> routes = Main.LoadData(null);
+		String link = String.format(URL_FORMAT, ROUTE_BOUNDS_BOX, ROUTE_TAGS, ROUTE_META);
+		ArrayList<Route> routes = null;
 
-		// save to db
-		DatabaseSource db = new DatabaseSource(this);
-		db.open();
-		db.beginTransaction();
-		db.clear();
-		int added = 0;
-		int index = 0;
-
-		for (com.bossly.lviv.transit.data.Route route : routes)
+		try
 		{
-			// ignore routes out of city
-			if (route.insideCity(49.7422316, 23.8623047, 49.9529871, 24.2056274))
-			{
-				if(db.insertRoute(route.id, route.name, route.route, route.genDescription(), route.genPath()) == -1)
-					Log.e(DashboardActivity.class.getName(), "Can't add item");
-				added++;
-
-				notificationBuilder.setProgress(routes.size(), index++, false);
-				notificationManager.notify(UPDATE_NOTIFICATION_ID, notificationBuilder.build());
-			}
+			routes = new WebAPI().parseTransitInfoByUrl(new URL(link));
+		} 
+		catch (MalformedURLException e)
+		{
+			e.printStackTrace();
 		}
 
-		Log.d(DashboardActivity.class.getName(), "Routes addded to db: " + added);
-
-		db.endTransaction();
-		db.close();
+		if(routes != null)
+		{
+			// save to db
+			DatabaseSource db = new DatabaseSource(this);
+			db.open();
+			db.beginTransaction();
+			db.clear();
+			int added = 0;
+			int index = 0;
+	
+			for (Route route : routes)
+			{
+				// ignore routes out of city
+				if (route.insideCity(49.7422316, 23.8623047, 49.9529871, 24.2056274))
+				{
+					if(db.insertRoute(route.id, route.getName(), route.route, route.genDescription(), route.genPath()) == -1)
+						Log.e(DashboardActivity.class.getName(), "Can't add item");
+					added++;
+	
+					notificationBuilder.setProgress(routes.size(), index++, false);
+					notificationManager.notify(UPDATE_NOTIFICATION_ID, notificationBuilder.build());
+				}
+			}
+	
+			Log.d(DashboardActivity.class.getName(), "Routes addded to db: " + added);
+	
+			db.endTransaction();
+			db.close();
+		}
 
 		notificationManager.cancel(UPDATE_NOTIFICATION_ID);
 		

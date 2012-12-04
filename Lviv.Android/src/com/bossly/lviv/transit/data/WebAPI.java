@@ -101,15 +101,6 @@ public class WebAPI extends DefaultHandler
 
 		if (qName.equalsIgnoreCase("relation") && route != null)
 		{
-
-			if (Main.DEBUG_LOG)
-			{
-				System.out.println(routes.size() + ". Route: " + route.name);
-
-				if (Main.DEBUG_LOG_LEVEL1)
-					System.out.println(route.genDescription());
-			}
-
 			routes.add(route);
 			route = null;
 		} else if (node != null && qName.equalsIgnoreCase("node"))

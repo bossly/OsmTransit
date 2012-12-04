@@ -18,7 +18,6 @@ public class DashboardActivity extends FragmentActivity implements OnClickListen
 
 	public static final String PREF_LAST_UPDATE = "pref_last_date";
 
-
 	private BroadcastReceiver mServiceReceiver = new BroadcastReceiver()
 	{
 		@Override

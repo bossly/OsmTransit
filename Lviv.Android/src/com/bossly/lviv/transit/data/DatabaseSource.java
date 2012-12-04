@@ -12,58 +12,64 @@ import android.util.Log;
 import com.bossly.lviv.transit.Route;
 import com.bossly.lviv.transit.data.RoutesDataProvider.DatabaseHelper;
 
-public class DatabaseSource {
+public class DatabaseSource
+{
 
 	// Database fields
 	private SQLiteDatabase database;
 
 	private DatabaseHelper dbHelper;
 
-	public DatabaseSource(Context context) {
+	public DatabaseSource(Context context)
+	{
 		dbHelper = new DatabaseHelper(context);
 	}
 
-	public void open() throws SQLException {
+	public void open() throws SQLException
+	{
 		database = dbHelper.getWritableDatabase();
 	}
 
-	public void close() {
+	public void close()
+	{
 		dbHelper.close();
 	}
-	
+
 	public void beginTransaction()
 	{
 		database.beginTransaction();
 	}
-	
+
 	public void endTransaction()
 	{
 		database.setTransactionSuccessful();
 		database.endTransaction();
 	}
 
-	public ArrayList<Route> getRoutes() {
+	public ArrayList<Route> getRoutes()
+	{
 		Cursor cursor = database.query(DatabaseHelper.TABLE_ROUTES, null, null,
-				null, null, null, null, null);
+		    null, null, null, null, null);
 		cursor.moveToFirst();
-		
+
 		int count = cursor.getCount();
 		Log.d(DatabaseSource.class.getName(), "Loaded routes: " + count);
 
 		ArrayList<Route> routes = new ArrayList<Route>();
 
-		while (!cursor.isAfterLast()) {
+		while (!cursor.isAfterLast())
+		{
 			Route route = new Route();
-			route.id = cursor.getLong(cursor
-					.getColumnIndex(DatabaseHelper.COLUMN_ID));
+			route.id = cursor
+			    .getLong(cursor.getColumnIndex(DatabaseHelper.COLUMN_ID));
 			route.name = cursor.getString(cursor
-					.getColumnIndex(DatabaseHelper.COLUMN_ROUTE_NAME));
+			    .getColumnIndex(DatabaseHelper.COLUMN_ROUTE_NAME));
 			route.type = cursor.getString(cursor
-					.getColumnIndex(DatabaseHelper.COLUMN_ROUTE_TYPE));
+			    .getColumnIndex(DatabaseHelper.COLUMN_ROUTE_TYPE));
 			route.desc = cursor.getString(cursor
-					.getColumnIndex(DatabaseHelper.COLUMN_ROUTE_DIRECTION));
+			    .getColumnIndex(DatabaseHelper.COLUMN_ROUTE_DIRECTION));
 			route.path = cursor.getString(cursor
-					.getColumnIndex(DatabaseHelper.COLUMN_ROUTE_PATH));
+			    .getColumnIndex(DatabaseHelper.COLUMN_ROUTE_PATH));
 
 			routes.add(route);
 
@@ -77,7 +83,8 @@ public class DatabaseSource {
 	}
 
 	public long insertRoute(long id, String name, String type, String desc,
-			String path) {
+	    String path)
+	{
 		ContentValues values = new ContentValues();
 		values.put(DatabaseHelper.COLUMN_ROUTE_ID, id + "");
 		values.put(DatabaseHelper.COLUMN_ROUTE_NAME, name);
@@ -89,7 +96,8 @@ public class DatabaseSource {
 		return database.insert(DatabaseHelper.TABLE_ROUTES, null, values);
 	}
 
-	public void clear() {
+	public void clear()
+	{
 		database.delete(DatabaseHelper.TABLE_ROUTES, null, null);
 	}
 }

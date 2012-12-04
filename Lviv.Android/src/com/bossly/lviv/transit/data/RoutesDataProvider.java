@@ -1,7 +1,5 @@
 package com.bossly.lviv.transit.data;
 
-import java.util.Locale;
-
 import android.content.ContentProvider;
 import android.content.ContentUris;
 import android.content.ContentValues;
@@ -10,7 +8,6 @@ import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.database.sqlite.SQLiteProgram;
 import android.net.Uri;
 import android.support.v4.database.DatabaseUtilsCompat;
 import android.util.Log;

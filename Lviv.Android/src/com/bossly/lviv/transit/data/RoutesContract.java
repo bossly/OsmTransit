@@ -1,6 +1,5 @@
 package com.bossly.lviv.transit.data;
 
-import android.location.Location;
 import android.net.Uri;
 import android.provider.BaseColumns;
 

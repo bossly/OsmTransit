@@ -13,7 +13,7 @@ import com.bossly.lviv.transit.GeoUtils.Point2D;
 public class Route {
 
 	public long id;
-	public String name;
+	private String name;
 	public String route;
 	public String operator;
 	public String from;
@@ -87,8 +87,18 @@ public class Route {
 		}
 	}
 	
-	private final static Pattern NAME_PATTERN = Pattern.compile("(^[^ ]*\\s.\\s?\\d*\\w)"); 
+	private final static Pattern NAME_PATTERN = Pattern.compile("(^.*[¹]\\s\\S*)");
 
+	public String getName()
+  {
+		Matcher matcher = NAME_PATTERN.matcher(name);
+		
+		if(matcher.find())
+			return matcher.group(0);
+
+		return name;
+  }
+	
 	public String genDescription() {
 		StringBuilder builder = new StringBuilder("");
 		String prev = "";
