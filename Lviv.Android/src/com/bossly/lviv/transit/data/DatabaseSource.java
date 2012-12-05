@@ -46,6 +46,11 @@ public class DatabaseSource
 		database.endTransaction();
 	}
 
+	public void insertNode( ContentValues values )
+	{
+		database.insert("points", null, values);
+	}
+	
 	public ArrayList<Route> getRoutes()
 	{
 		Cursor cursor = database.query(DatabaseHelper.TABLE_ROUTES, null, null,

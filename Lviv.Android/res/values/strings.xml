@@ -42,4 +42,8 @@
 
     <string name="title_update">Download osm data</string>
 
+    <string name="title_all">Всі [а-Я]</string>
+
+    <string name="title_near_routes">Поблизу</string>
+
 </resources>

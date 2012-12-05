@@ -8,6 +8,7 @@ import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.support.v4.database.DatabaseUtilsCompat;
 import android.util.Log;
@@ -20,7 +21,7 @@ public class RoutesDataProvider extends ContentProvider
 
 		private static final String DATABASE_NAME = "routes.db";
 
-		private static final int DATABASE_VERSION = 4;
+		private static final int DATABASE_VERSION = 5;
 
 		public static final String TABLE_ROUTES = "routes";
 
@@ -49,7 +50,7 @@ public class RoutesDataProvider extends ContentProvider
 				+ " text, " + COLUMN_ROUTE_SEARCH + " text, " + COLUMN_ROUTE_PATH + " text " + ");";
 
 		private static final String DATABASE_POINT_CREATE = "create table points ("
-				+ "_id integer primary key autoincrement, latitude FLOAT , longitude FLOAT, route_id INTEGER);";
+				+ "_id integer primary key autoincrement, latitude FLOAT, longitude FLOAT, route_id INTEGER);";
 
 		public DatabaseHelper(Context context)
 		{
@@ -60,6 +61,7 @@ public class RoutesDataProvider extends ContentProvider
 		public void onCreate(SQLiteDatabase database)
 		{
 			database.execSQL(DATABASE_CREATE);
+			database.execSQL(DATABASE_POINT_CREATE);
 		}
 
 		@Override
@@ -69,6 +71,7 @@ public class RoutesDataProvider extends ContentProvider
 					+ " to " + newVersion + ", which will destroy all old data");
 
 			db.execSQL("DROP TABLE IF EXISTS " + TABLE_ROUTES);
+			db.execSQL("DROP TABLE IF EXISTS points");
 
 			onCreate(db);
 		}
@@ -83,29 +86,44 @@ public class RoutesDataProvider extends ContentProvider
 		MATCHER.addURI(RoutesContract.AUTHORITY, "routes/#", 1);
 		MATCHER.addURI(RoutesContract.AUTHORITY, "points", 2);
 		MATCHER.addURI(RoutesContract.AUTHORITY, "points/#", 3);
+		MATCHER.addURI(RoutesContract.AUTHORITY, "routes/bounds/*", 4);
 	}
 
 	@Override
 	public int delete(Uri uri, String selection, String[] selectionArgs)
 	{
+		String tableName = null;
+
 		switch (MATCHER.match(uri))
 		{
 			case 0:
+				tableName = DatabaseHelper.TABLE_ROUTES;
 				break;
 
 			case 1:
 			{
 				long id = ContentUris.parseId(uri);
 				selection = DatabaseUtilsCompat.concatenateWhere(selection, "_id=" + id);
+				tableName = DatabaseHelper.TABLE_ROUTES;
 			}
 				break;
+
+			case 2:
+				tableName = "points";
+				break;
+
+			case 3:
+			{
+				long id = ContentUris.parseId(uri);
+				selection = DatabaseUtilsCompat.concatenateWhere(selection, "_id=" + id);
+				tableName = "points";
+			}
 
 			default:
 				throw new IllegalArgumentException("uri");
 		}
 
-		int result = mDbHelper.getWritableDatabase().delete(DatabaseHelper.TABLE_ROUTES, selection,
-				selectionArgs);
+		int result = mDbHelper.getWritableDatabase().delete(tableName, selection, selectionArgs);
 		getContext().getContentResolver().notifyChange(uri, null);
 
 		return result;
@@ -122,6 +140,12 @@ public class RoutesDataProvider extends ContentProvider
 			case 1:
 				return RoutesContract.RouteData.ITEM_MIME_TYPE;
 
+			case 2:
+				return RoutesContract.PointData.DIR_MIME_TYPE;
+
+			case 3:
+				return RoutesContract.PointData.ITEM_MIME_TYPE;
+
 			default:
 				throw new IllegalArgumentException("uri");
 		}
@@ -130,16 +154,23 @@ public class RoutesDataProvider extends ContentProvider
 	@Override
 	public Uri insert(Uri uri, ContentValues values)
 	{
+		String tableName = null;
+
 		switch (MATCHER.match(uri))
 		{
 			case 0:
+				tableName = DatabaseHelper.TABLE_ROUTES;
+				break;
+
+			case 2:
+				tableName = "points";
 				break;
 
 			default:
 				throw new IllegalArgumentException("uri");
 		}
 
-		long id = mDbHelper.getWritableDatabase().insert(DatabaseHelper.TABLE_ROUTES, null, values);
+		long id = mDbHelper.getWritableDatabase().insert(tableName, null, values);
 		Uri resultUri = ContentUris.withAppendedId(RoutesContract.RouteData.CONTENT_URI, id);
 		getContext().getContentResolver().notifyChange(resultUri, null);
 
@@ -157,47 +188,91 @@ public class RoutesDataProvider extends ContentProvider
 	public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs,
 			String sortOrder)
 	{
+		String groupBy = null;
+		SQLiteQueryBuilder queryBuilder = new SQLiteQueryBuilder();
+
 		switch (MATCHER.match(uri))
 		{
 			case 0:
+				queryBuilder.setTables(DatabaseHelper.TABLE_ROUTES);
 				break;
 
 			case 1:
 			{
 				long id = ContentUris.parseId(uri);
 				selection = DatabaseUtilsCompat.concatenateWhere(selection, "_id=" + id);
+				queryBuilder.setTables(DatabaseHelper.TABLE_ROUTES);
 			}
 				break;
+
+			case 2:
+				queryBuilder.setTables("points");
+				break;
+
+			case 3:
+			{
+				long id = ContentUris.parseId(uri);
+				selection = DatabaseUtilsCompat.concatenateWhere(selection, "_id=" + id);
+				queryBuilder.setTables("points");
+			}
+			break;
+			
+			case 4:
+			{
+				String location = uri.getLastPathSegment();
+				String[] coords = location.split(";");
+				location = String.format("(latitude BETWEEN %s AND %s) AND (longitude BETWEEN %s AND %s)", 
+						coords[0], coords[1], coords[2], coords[3]);
+				
+				queryBuilder.setTables("routes INNER JOIN points ON routes._id=points.route_id");				
+				selection = DatabaseUtilsCompat.concatenateWhere(selection, location);
+				groupBy = "routes._id";
+			}
+			break;
 
 			default:
 				throw new IllegalArgumentException("uri");
 		}
 
-		return mDbHelper.getWritableDatabase().query(DatabaseHelper.TABLE_ROUTES, projection,
-				selection, selectionArgs, null, null, sortOrder);
+		return queryBuilder.query(mDbHelper.getWritableDatabase(), projection, selection, selectionArgs, groupBy, null, sortOrder); 
 	}
 
 	@Override
 	public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs)
 	{
+		String tableName = null;
+
 		switch (MATCHER.match(uri))
 		{
 			case 0:
+				tableName = DatabaseHelper.TABLE_ROUTES;
 				break;
 
 			case 1:
 			{
 				long id = ContentUris.parseId(uri);
 				selection = DatabaseUtilsCompat.concatenateWhere(selection, "_id=" + id);
+				tableName = DatabaseHelper.TABLE_ROUTES;
 			}
 				break;
+
+			case 2:
+				tableName = "points";
+				break;
+
+			case 3:
+			{
+				long id = ContentUris.parseId(uri);
+				selection = DatabaseUtilsCompat.concatenateWhere(selection, "_id=" + id);
+				tableName = "points";
+			}
 
 			default:
 				throw new IllegalArgumentException("uri");
 		}
 
-		int result = mDbHelper.getWritableDatabase().update(DatabaseHelper.TABLE_ROUTES, values,
-				selection, selectionArgs);
+		int result = mDbHelper.getWritableDatabase()
+				.update(tableName, values, selection, selectionArgs);
 		getContext().getContentResolver().notifyChange(uri, null);
 
 		return result;

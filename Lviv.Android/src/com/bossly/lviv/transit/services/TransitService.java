@@ -8,6 +8,7 @@ import android.app.IntentService;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -19,7 +20,9 @@ import android.widget.Toast;
 import com.bossly.lviv.transit.R;
 import com.bossly.lviv.transit.activities.DashboardActivity;
 import com.bossly.lviv.transit.data.DatabaseSource;
+import com.bossly.lviv.transit.data.Node;
 import com.bossly.lviv.transit.data.Route;
+import com.bossly.lviv.transit.data.RoutesContract;
 import com.bossly.lviv.transit.data.WebAPI;
 
 public class TransitService extends IntentService
@@ -96,13 +99,27 @@ public class TransitService extends IntentService
 			int added = 0;
 			int index = 0;
 	
+			ContentValues pointValues = new ContentValues();
+			
 			for (Route route : routes)
 			{
 				// ignore routes out of city
 				if (route.insideCity(49.7422316, 23.8623047, 49.9529871, 24.2056274))
 				{
-					if(db.insertRoute(route.id, route.getName(), route.route, route.genDescription(), route.genPath()) == -1)
+					long routeId = db.insertRoute(route.id, route.getName(), route.route, route.genDescription(), route.genPath());
+					
+					if(routeId == -1)
 						Log.e(DashboardActivity.class.getName(), "Can't add item");
+
+					for (Node node : route.getNodes())
+					{
+						pointValues.put(RoutesContract.PointData.ROUTE_ID, routeId);
+						pointValues.put(RoutesContract.PointData.LATITUDE, node.lat);
+						pointValues.put(RoutesContract.PointData.LONGITUDE, node.lon);
+						
+						db.insertNode(pointValues);
+					}
+					
 					added++;
 	
 					notificationBuilder.setProgress(routes.size(), index++, false);

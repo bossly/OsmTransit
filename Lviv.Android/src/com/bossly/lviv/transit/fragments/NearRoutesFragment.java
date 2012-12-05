@@ -10,6 +10,7 @@ import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
@@ -43,6 +44,8 @@ public class NearRoutesFragment extends Fragment implements LoaderCallbacks<Curs
 		OnClickListener, OnItemClickListener, LocationListener,
 		android.widget.RadioGroup.OnCheckedChangeListener
 {
+	private static final int TWO_MINUTES = 1000 * 60 * 2;
+
 	public EditText vEditText;
 
 	public ListView vListView;
@@ -58,11 +61,11 @@ public class NearRoutesFragment extends Fragment implements LoaderCallbacks<Curs
 	private Location m_location = null;
 
 	private LocationManager m_manager;
-	
+
 	private RouteCursorAdapter mCursorAdapter;
-	
+
 	private String mCursorFilter;
-	
+
 	@Override
 	public void onAttach(Activity activity)
 	{
@@ -81,10 +84,10 @@ public class NearRoutesFragment extends Fragment implements LoaderCallbacks<Curs
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
 	{
 		View content = inflater.inflate(R.layout.fr_near_routes, container, false);
-		
-		vEditText = (EditText) content.findViewById(R.id.editText1);
-		vListView = (ListView) content.findViewById(R.id.listView1);
-		RadioGroup radio = (RadioGroup) content.findViewById(R.id.radioGroup1);
+
+		vEditText = (EditText) content.findViewById(R.id.v_search);
+		vListView = (ListView) content.findViewById(android.R.id.list);
+		RadioGroup radio = (RadioGroup) content.findViewById(R.id.v_rdgp_routes);
 		radio.setOnCheckedChangeListener(this);
 
 		vEditText.addTextChangedListener(this);
@@ -108,9 +111,9 @@ public class NearRoutesFragment extends Fragment implements LoaderCallbacks<Curs
 		vListView.setEmptyView(content.findViewById(android.R.id.empty));
 		vListView.setOnItemClickListener(this);
 
-		m_textStatus = (TextView) content.findViewById(R.id.textStatus);
+		m_textStatus = (TextView) content.findViewById(R.id.v_status);
 
-		content.findViewById(R.id.button_reload).setOnClickListener(this);
+		content.findViewById(R.id.v_clear).setOnClickListener(this);
 
 		if (savedInstanceState != null)
 		{
@@ -166,14 +169,13 @@ public class NearRoutesFragment extends Fragment implements LoaderCallbacks<Curs
 	{
 	}
 
-
 	@Override
 	public void onTextChanged(CharSequence s, int start, int before, int count)
 	{
 		mCursorFilter = s.toString();
 		getLoaderManager().restartLoader(0, null, this);
-		
-		if(TextUtils.isEmpty(mCursorFilter))
+
+		if (TextUtils.isEmpty(mCursorFilter))
 		{
 			mCursorAdapter.setFilterHighlight(null);
 		}
@@ -183,6 +185,12 @@ public class NearRoutesFragment extends Fragment implements LoaderCallbacks<Curs
 		}
 	}
 
+	@Override
+	public void onResume()
+	{
+		super.onResume();
+	}
+	
 	@Override
 	public void onClick(View v)
 	{
@@ -207,6 +215,8 @@ public class NearRoutesFragment extends Fragment implements LoaderCallbacks<Curs
 	{
 		if (m_manager != null)
 		{
+			m_textStatus.setVisibility(View.VISIBLE);
+			
 			if (m_manager.isProviderEnabled(LocationManager.GPS_PROVIDER))
 			{
 				Location location = m_manager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
@@ -254,6 +264,7 @@ public class NearRoutesFragment extends Fragment implements LoaderCallbacks<Curs
 	{
 		if (m_manager != null)
 		{
+			m_textStatus.setVisibility(View.GONE);
 			m_manager.removeUpdates(this);
 		}
 	}
@@ -290,7 +301,6 @@ public class NearRoutesFragment extends Fragment implements LoaderCallbacks<Curs
 				m_textStatus.setText(String.format("Точність: < %.1f метрів", accuracy));
 			}
 
-
 			if (vListView != null)
 			{
 				vListView.setSelectionFromTop(position, scroll_y);
@@ -299,8 +309,6 @@ public class NearRoutesFragment extends Fragment implements LoaderCallbacks<Curs
 
 		return success;
 	}
-
-	private static final int TWO_MINUTES = 1000 * 60 * 2;
 
 	/* LocationListener */
 
@@ -337,67 +345,75 @@ public class NearRoutesFragment extends Fragment implements LoaderCallbacks<Curs
 	@Override
 	public void onCheckedChanged(RadioGroup group, int checkedId)
 	{
-
-		Location loc;
-
-		if (checkedId == R.id.radio0)
+		switch (checkedId)
 		{
-			loc = null;
-			stopDetermineUserLocation();
-		}
-		else
-		{
-			loc = m_location; // last known location
-			startDetermineUserLocation();
-		}
+			case R.id.v_rd_near:
+				startDetermineUserLocation();
+				break;
 
+			case R.id.v_rd_default:
+				stopDetermineUserLocation();
+				break;
+		}
 	}
 
 	@Override
 	public Loader<Cursor> onCreateLoader(int id, Bundle args)
 	{
 		String selection = null;
-		
-		if(!TextUtils.isEmpty(mCursorFilter))
+		Uri contentUri = RoutesContract.RouteData.CONTENT_URI;
+
+		if (!TextUtils.isEmpty(mCursorFilter))
 		{
 			String[] filters = mCursorFilter.split(" ");
 			StringBuilder stringBuilder = new StringBuilder();
-			
-			for (int i = 0; i < filters.length; i++)
-      {
-	      if(i != 0)
-	  			stringBuilder.append(" AND ");
-	      
-	      stringBuilder.append("(");
-	      stringBuilder.append(RoutesContract.RouteData.SEARCH);
-	      stringBuilder.append(" LIKE '%");
-	      stringBuilder.append(filters[i]);
-	      stringBuilder.append("%')");
-      }
 
+			stringBuilder.append(RoutesContract.RouteData.SEARCH);
+			stringBuilder.append(" LIKE '%");
+
+			for (int i = 0; i < filters.length; i++)
+			{
+				if (i != 0)
+					stringBuilder.append("%");
+
+				stringBuilder.append(filters[i]);
+			}
+
+			stringBuilder.append("%'");
+			
 			selection = stringBuilder.toString();
 		}
 		
-		return new CursorLoader(getActivity(), RoutesContract.RouteData.CONTENT_URI, null, selection, null, null);
+		if(false)
+		{
+			StringBuilder boundsBuilder = new StringBuilder();
+
+			boundsBuilder.append("49.821649;49.826744;24.045503;24.051383");
+			
+			contentUri = Uri.withAppendedPath(RoutesContract.RouteData.CONTENT_BOUNDS_URI, boundsBuilder.toString());
+		}
+
+		return new CursorLoader(getActivity(), contentUri, null, selection,
+				null, null);
 	}
 
-
 	@Override
-  public void onLoadFinished(Loader<Cursor> loader, Cursor result)
-  {
-		if(mCursorAdapter == null)
+	public void onLoadFinished(Loader<Cursor> loader, Cursor result)
+	{
+		if (mCursorAdapter == null)
 		{
-			mCursorAdapter = new RouteCursorAdapter(getActivity(), result, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
+			mCursorAdapter = new RouteCursorAdapter(getActivity(), result,
+					CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
 			vListView.setAdapter(mCursorAdapter);
 		}
 		else
 		{
 			mCursorAdapter.swapCursor(result);
 		}
-  }
+	}
 
 	@Override
-  public void onLoaderReset(Loader<Cursor> loader)
-  {
-  }
+	public void onLoaderReset(Loader<Cursor> loader)
+	{
+	}
 }

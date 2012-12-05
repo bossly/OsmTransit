@@ -10,7 +10,9 @@ public class RoutesContract
 	public static class RouteData implements BaseColumns
 	{
 		public final static Uri CONTENT_URI = Uri.parse("content://" + AUTHORITY + "/routes");
-		
+
+		public final static Uri CONTENT_BOUNDS_URI = Uri.parse("content://" + AUTHORITY + "/routes/bounds/");
+
 		public final static String DIR_MIME_TYPE = "vnd.android.cursor.dir/com.bossly.lviv.transit.provider.routes";
 
 		public final static String ITEM_MIME_TYPE = "vnd.android.cursor.item/com.bossly.lviv.transit.provider.routes";
