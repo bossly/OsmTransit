@@ -46,6 +46,8 @@ public class NearRoutesFragment extends Fragment implements LoaderCallbacks<Curs
 {
 	private static final int TWO_MINUTES = 1000 * 60 * 2;
 
+	private static final double BOUNDS_SIZE = 0.003; 
+
 	public EditText vEditText;
 
 	public ListView vListView;
@@ -264,6 +266,8 @@ public class NearRoutesFragment extends Fragment implements LoaderCallbacks<Curs
 	{
 		if (m_manager != null)
 		{
+			m_location = null;
+			getLoaderManager().restartLoader(0, null, this);
 			m_textStatus.setVisibility(View.GONE);
 			m_manager.removeUpdates(this);
 		}
@@ -301,6 +305,8 @@ public class NearRoutesFragment extends Fragment implements LoaderCallbacks<Curs
 				m_textStatus.setText(String.format("Точність: < %.1f метрів", accuracy));
 			}
 
+			getLoaderManager().restartLoader(0, null, this);
+			
 			if (vListView != null)
 			{
 				vListView.setSelectionFromTop(position, scroll_y);
@@ -384,11 +390,17 @@ public class NearRoutesFragment extends Fragment implements LoaderCallbacks<Curs
 			selection = stringBuilder.toString();
 		}
 		
-		if(false)
+		if(m_location != null)
 		{
 			StringBuilder boundsBuilder = new StringBuilder();
 
-			boundsBuilder.append("49.821649;49.826744;24.045503;24.051383");
+			boundsBuilder.append(m_location.getLatitude() - BOUNDS_SIZE);
+			boundsBuilder.append(";");
+			boundsBuilder.append(m_location.getLatitude() + BOUNDS_SIZE);
+			boundsBuilder.append(";");
+			boundsBuilder.append(m_location.getLongitude() - BOUNDS_SIZE);
+			boundsBuilder.append(";");
+			boundsBuilder.append(m_location.getLongitude() + BOUNDS_SIZE);
 			
 			contentUri = Uri.withAppendedPath(RoutesContract.RouteData.CONTENT_BOUNDS_URI, boundsBuilder.toString());
 		}
