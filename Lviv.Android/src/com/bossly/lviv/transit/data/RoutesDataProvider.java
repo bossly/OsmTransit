@@ -215,26 +215,27 @@ public class RoutesDataProvider extends ContentProvider
 				selection = DatabaseUtilsCompat.concatenateWhere(selection, "_id=" + id);
 				queryBuilder.setTables("points");
 			}
-			break;
-			
+				break;
+
 			case 4:
 			{
 				String location = uri.getLastPathSegment();
 				String[] coords = location.split(";");
-				location = String.format("(latitude BETWEEN %s AND %s) AND (longitude BETWEEN %s AND %s)", 
+				location = String.format("(latitude BETWEEN %s AND %s) AND (longitude BETWEEN %s AND %s)",
 						coords[0], coords[1], coords[2], coords[3]);
-				
-				queryBuilder.setTables("routes INNER JOIN points ON routes._id=points.route_id");				
+
+				queryBuilder.setTables("routes INNER JOIN points ON routes._id=points.route_id");
 				selection = DatabaseUtilsCompat.concatenateWhere(selection, location);
 				groupBy = "routes._id";
 			}
-			break;
+				break;
 
 			default:
 				throw new IllegalArgumentException("uri");
 		}
 
-		return queryBuilder.query(mDbHelper.getWritableDatabase(), projection, selection, selectionArgs, groupBy, null, sortOrder); 
+		return queryBuilder.query(mDbHelper.getWritableDatabase(), projection, selection,
+				selectionArgs, groupBy, null, sortOrder);
 	}
 
 	@Override

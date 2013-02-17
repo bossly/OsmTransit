@@ -46,15 +46,15 @@ public class DatabaseSource
 		database.endTransaction();
 	}
 
-	public void insertNode( ContentValues values )
+	public void insertNode(ContentValues values)
 	{
 		database.insert("points", null, values);
 	}
-	
+
 	public ArrayList<Route> getRoutes()
 	{
-		Cursor cursor = database.query(DatabaseHelper.TABLE_ROUTES, null, null,
-		    null, null, null, null, null);
+		Cursor cursor = database.query(DatabaseHelper.TABLE_ROUTES, null, null, null, null, null, null,
+				null);
 		cursor.moveToFirst();
 
 		int count = cursor.getCount();
@@ -65,16 +65,11 @@ public class DatabaseSource
 		while (!cursor.isAfterLast())
 		{
 			Route route = new Route();
-			route.id = cursor
-			    .getLong(cursor.getColumnIndex(DatabaseHelper.COLUMN_ID));
-			route.name = cursor.getString(cursor
-			    .getColumnIndex(DatabaseHelper.COLUMN_ROUTE_NAME));
-			route.type = cursor.getString(cursor
-			    .getColumnIndex(DatabaseHelper.COLUMN_ROUTE_TYPE));
-			route.desc = cursor.getString(cursor
-			    .getColumnIndex(DatabaseHelper.COLUMN_ROUTE_DIRECTION));
-			route.path = cursor.getString(cursor
-			    .getColumnIndex(DatabaseHelper.COLUMN_ROUTE_PATH));
+			route.id = cursor.getLong(cursor.getColumnIndex(DatabaseHelper.COLUMN_ID));
+			route.name = cursor.getString(cursor.getColumnIndex(DatabaseHelper.COLUMN_ROUTE_NAME));
+			route.type = cursor.getString(cursor.getColumnIndex(DatabaseHelper.COLUMN_ROUTE_TYPE));
+			route.desc = cursor.getString(cursor.getColumnIndex(DatabaseHelper.COLUMN_ROUTE_DIRECTION));
+			route.path = cursor.getString(cursor.getColumnIndex(DatabaseHelper.COLUMN_ROUTE_PATH));
 
 			routes.add(route);
 
@@ -87,8 +82,7 @@ public class DatabaseSource
 		return routes;
 	}
 
-	public long insertRoute(long id, String name, String type, String desc,
-	    String path)
+	public long insertRoute(long id, String name, String type, String desc, String path)
 	{
 		ContentValues values = new ContentValues();
 		values.put(DatabaseHelper.COLUMN_ROUTE_ID, id + "");

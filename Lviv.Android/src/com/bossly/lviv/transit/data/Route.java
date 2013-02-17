@@ -1,6 +1,7 @@
 package com.bossly.lviv.transit.data;
 
 import java.util.ArrayList;
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -9,6 +10,7 @@ import org.xml.sax.Attributes;
 import android.util.Log;
 
 import com.bossly.lviv.transit.GeoUtils.Point2D;
+import com.bossly.lviv.transit.utils.CommonUtils;
 
 public class Route
 {
@@ -294,7 +296,7 @@ public class Route
 
 			if (dis >= min_dist)
 			{
-				builder.append(String.format("%f,%f;", node.lat, node.lon));
+				builder.append(String.format(Locale.US, "%f,%f;", node.lat, node.lon));
 				prevNode = node;
 			}
 		}

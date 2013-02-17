@@ -46,7 +46,7 @@ public class NearRoutesFragment extends Fragment implements LoaderCallbacks<Curs
 {
 	private static final int TWO_MINUTES = 1000 * 60 * 2;
 
-	private static final double BOUNDS_SIZE = 0.003; 
+	private static final double BOUNDS_SIZE = 0.003;
 
 	public EditText vEditText;
 
@@ -192,7 +192,7 @@ public class NearRoutesFragment extends Fragment implements LoaderCallbacks<Curs
 	{
 		super.onResume();
 	}
-	
+
 	@Override
 	public void onClick(View v)
 	{
@@ -218,7 +218,7 @@ public class NearRoutesFragment extends Fragment implements LoaderCallbacks<Curs
 		if (m_manager != null)
 		{
 			m_textStatus.setVisibility(View.VISIBLE);
-			
+
 			if (m_manager.isProviderEnabled(LocationManager.GPS_PROVIDER))
 			{
 				Location location = m_manager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
@@ -306,7 +306,7 @@ public class NearRoutesFragment extends Fragment implements LoaderCallbacks<Curs
 			}
 
 			getLoaderManager().restartLoader(0, null, this);
-			
+
 			if (vListView != null)
 			{
 				vListView.setSelectionFromTop(position, scroll_y);
@@ -386,11 +386,11 @@ public class NearRoutesFragment extends Fragment implements LoaderCallbacks<Curs
 			}
 
 			stringBuilder.append("%'");
-			
+
 			selection = stringBuilder.toString();
 		}
-		
-		if(m_location != null)
+
+		if (m_location != null)
 		{
 			StringBuilder boundsBuilder = new StringBuilder();
 
@@ -401,12 +401,12 @@ public class NearRoutesFragment extends Fragment implements LoaderCallbacks<Curs
 			boundsBuilder.append(m_location.getLongitude() - BOUNDS_SIZE);
 			boundsBuilder.append(";");
 			boundsBuilder.append(m_location.getLongitude() + BOUNDS_SIZE);
-			
-			contentUri = Uri.withAppendedPath(RoutesContract.RouteData.CONTENT_BOUNDS_URI, boundsBuilder.toString());
+
+			contentUri = Uri.withAppendedPath(RoutesContract.RouteData.CONTENT_BOUNDS_URI,
+					boundsBuilder.toString());
 		}
 
-		return new CursorLoader(getActivity(), contentUri, null, selection,
-				null, null);
+		return new CursorLoader(getActivity(), contentUri, null, selection, null, null);
 	}
 
 	@Override

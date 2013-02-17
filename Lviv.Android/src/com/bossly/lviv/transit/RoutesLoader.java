@@ -28,7 +28,8 @@ public class RoutesLoader extends AsyncTaskLoader<List<Route>>
 		if (takeContentChanged() || m_data == null || isReset())
 		{
 			forceLoad();
-		} else
+		}
+		else
 		{
 			deliverResult(m_data);
 		}
@@ -46,7 +47,8 @@ public class RoutesLoader extends AsyncTaskLoader<List<Route>>
 		if (isAbandoned())
 		{
 			data.addAll(m_data);
-		} else if (isStarted())
+		}
+		else if (isStarted())
 		{
 			m_data = data;
 			super.deliverResult(data);

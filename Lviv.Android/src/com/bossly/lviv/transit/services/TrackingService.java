@@ -1,6 +1,6 @@
 package com.bossly.lviv.transit.services;
 
-import org.mapsforge.core.model.GeoPoint;
+import org.mapsforge.core.GeoPoint;
 
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -148,8 +148,8 @@ public class TrackingService extends Service implements LocationListener
 			// getApplicationContext(), DashboardActivity.class );
 			// intent.setFlags( Intent.FLAG_ACTIVITY_CLEAR_TOP );
 
-			meters = Point2D.distance(location.getLatitude(), location.getLongitude(), pointB.latitude,
-					pointB.longitude);
+			meters = Point2D.distance(location.getLatitude(), location.getLongitude(), pointB.getLatitude(),
+					pointB.getLongitude());
 
 			if (meters < MIN_DISTANCE)
 			{

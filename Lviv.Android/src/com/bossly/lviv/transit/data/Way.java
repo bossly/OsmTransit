@@ -32,7 +32,8 @@ public class Way extends DefaultHandler
 				nodes.add(Long.parseLong(ref));
 			}
 
-		} else if (qName.equalsIgnoreCase("tag"))
+		}
+		else if (qName.equalsIgnoreCase("tag"))
 		{
 
 			int ikey = attributes.getIndex("k");
@@ -52,8 +53,8 @@ public class Way extends DefaultHandler
 	}
 
 	@Override
-	public void startElement(String uri, String localName, String qName,
-	    Attributes attributes) throws SAXException
+	public void startElement(String uri, String localName, String qName, Attributes attributes)
+			throws SAXException
 	{
 
 		parse(qName, attributes);

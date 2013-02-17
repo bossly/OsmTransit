@@ -16,7 +16,7 @@ public class NearRoutesActivity extends FragmentActivity
 	{
 		super.onCreate(savedInstanceState);
 
-		if(savedInstanceState == null)
+		if (savedInstanceState == null)
 		{
 			FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
 			transaction.add(android.R.id.content, new NearRoutesFragment());

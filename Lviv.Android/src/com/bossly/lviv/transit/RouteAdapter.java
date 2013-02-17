@@ -99,13 +99,14 @@ public class RouteAdapter extends BaseAdapter implements Filterable
 		Route route = getItem(position);
 		text1.setText(route.name);
 
-		if(TextUtils.isEmpty(cur_filter_text))
+		if (TextUtils.isEmpty(cur_filter_text))
 		{
 			text2.setText(route.desc);
 		}
 		else
 		{
-			text2.setText(CommonUtils.highlight(route.desc, cur_filter_text.toString().split(" "), Color.YELLOW));
+			text2.setText(CommonUtils.highlight(route.desc, cur_filter_text.toString().split(" "),
+					Color.YELLOW));
 		}
 
 		return convertView;

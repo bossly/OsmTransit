@@ -7,10 +7,10 @@ import com.bossly.lviv.transit.R;
 
 public class SettingsActivity extends PreferenceActivity
 {
-  @Override
-  protected void onCreate( Bundle savedInstanceState )
-  {
-    super.onCreate( savedInstanceState );
-    addPreferencesFromResource( R.xml.settings );
-  }
+	@Override
+	protected void onCreate(Bundle savedInstanceState)
+	{
+		super.onCreate(savedInstanceState);
+		addPreferencesFromResource(R.xml.settings);
+	}
 }

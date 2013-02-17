@@ -39,15 +39,18 @@ public class WebAPI extends DefaultHandler
 			SAXParser parser = factory.newSAXParser();
 
 			parser.parse(stream, this);
-		} catch (Exception e)
+		}
+		catch (Exception e)
 		{
 			e.printStackTrace();
-		} finally
+		}
+		finally
 		{
 			try
 			{
 				stream.close();
-			} catch (Exception e)
+			}
+			catch (Exception e)
 			{
 			}
 		}
@@ -66,28 +69,33 @@ public class WebAPI extends DefaultHandler
 	// ---
 
 	@Override
-	public void startElement(String uri, String localName, String qName,
-	    Attributes attributes) throws SAXException
+	public void startElement(String uri, String localName, String qName, Attributes attributes)
+			throws SAXException
 	{
 
 		if (node != null)
 		{
 			node.parse(qName, attributes);
-		} else if (way != null)
+		}
+		else if (way != null)
 		{
 			way.parse(qName, attributes);
-		} else if (route != null)
+		}
+		else if (route != null)
 		{
 			route.parse(qName, attributes);
-		} else if (qName.equalsIgnoreCase("relation"))
+		}
+		else if (qName.equalsIgnoreCase("relation"))
 		{
 			route = new Route();
 			route.parse(qName, attributes);
-		} else if (qName.equalsIgnoreCase("node"))
+		}
+		else if (qName.equalsIgnoreCase("node"))
 		{
 			node = new Node();
 			node.parse(qName, attributes);
-		} else if (qName.equalsIgnoreCase("way"))
+		}
+		else if (qName.equalsIgnoreCase("way"))
 		{
 			way = new Way();
 			way.parse(qName, attributes);
@@ -95,19 +103,20 @@ public class WebAPI extends DefaultHandler
 	}
 
 	@Override
-	public void endElement(String uri, String localName, String qName)
-	    throws SAXException
+	public void endElement(String uri, String localName, String qName) throws SAXException
 	{
 
 		if (qName.equalsIgnoreCase("relation") && route != null)
 		{
 			routes.add(route);
 			route = null;
-		} else if (node != null && qName.equalsIgnoreCase("node"))
+		}
+		else if (node != null && qName.equalsIgnoreCase("node"))
 		{
 			nodes.put(node.id, node);
 			node = null;
-		} else if (way != null && qName.equalsIgnoreCase("way"))
+		}
+		else if (way != null && qName.equalsIgnoreCase("way"))
 		{
 			ways.put(way.id, way);
 			way = null;

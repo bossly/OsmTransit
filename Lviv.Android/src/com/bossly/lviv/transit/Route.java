@@ -4,7 +4,8 @@ import java.io.Serializable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class Route implements Comparable<Route>, Serializable {
+public class Route implements Comparable<Route>, Serializable
+{
 
 	private static final long serialVersionUID = -8539225116230155969L;
 
@@ -23,44 +24,58 @@ public class Route implements Comparable<Route>, Serializable {
 	public int points = 0;
 
 	@Override
-	public int compareTo(Route another) {
+	public int compareTo(Route another)
+	{
 
 		int dist = (int) (min_distance - another.min_distance);
 
-		if (dist == 0) {
+		if (dist == 0)
+		{
 			int numer1 = getNumber();
 			int numer2 = another.getNumber();
 
 			return numer1 - numer2;
-		} else
+		}
+		else
 			return dist;
 	}
 
 	final Pattern p = Pattern.compile("(\\d+)");
 
-	private String getHumaneType() {
+	private String getHumaneType()
+	{
 
 		String transport = type;
 
-		if (transport.equalsIgnoreCase("bus")) {
+		if (transport.equalsIgnoreCase("bus"))
+		{
 			transport = "Автобус";
-		} else if (transport.equalsIgnoreCase("trolleybus")) {
+		}
+		else if (transport.equalsIgnoreCase("trolleybus"))
+		{
 			transport = "Тролейбус";
-		} else if (transport.equalsIgnoreCase("tram")) {
+		}
+		else if (transport.equalsIgnoreCase("tram"))
+		{
 			transport = "Трамвай";
 		}
 
 		return transport;
 	}
 
-	private int getNumber() {
+	private int getNumber()
+	{
 		int number = 0;
 		Matcher m = p.matcher(name);
 
-		if (m.find()) {
-			try {
+		if (m.find())
+		{
+			try
+			{
 				number = Integer.parseInt(m.group(1));
-			} catch (NumberFormatException e) {
+			}
+			catch (NumberFormatException e)
+			{
 			}
 		}
 
@@ -68,11 +83,12 @@ public class Route implements Comparable<Route>, Serializable {
 	}
 
 	@Override
-	public String toString() {
+	public String toString()
+	{
 
-//		if (BuildConfig.DEBUG) {
-//			return name + "[" + id + "]" + " - " + (int) min_distance + " m";
-//		}
+		// if (BuildConfig.DEBUG) {
+		// return name + "[" + id + "]" + " - " + (int) min_distance + " m";
+		// }
 
 		return getHumaneType() + " № " + getNumber();
 	}
