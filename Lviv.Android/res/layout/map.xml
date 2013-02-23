@@ -77,7 +77,7 @@
                 android:background="@drawable/trans_button"
                 android:text="-"
                 android:textColor="#fff"
-                android:textSize="30dip" />
+                android:textSize="30sp" />
         </LinearLayout>
 
         <!-- Loading indicator -->
