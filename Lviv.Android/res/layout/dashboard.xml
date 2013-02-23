@@ -12,16 +12,15 @@
         android:padding="10dip" >
 
         <LinearLayout
-            android:id="@+id/linearLayout1"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="60dip"
             android:gravity="center" >
 
             <Button
-                android:id="@+id/button1"
+                android:id="@+id/v_btn_routes"
                 android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_margin="5dip"
                 android:layout_weight="1"
                 android:background="@drawable/bg_bar_button"
@@ -29,9 +28,9 @@
                 android:text="@string/menu_routes_all" />
 
             <Button
-                android:id="@+id/button3"
+                android:id="@+id/v_btn_map"
                 android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:background="@drawable/bg_bar_button"
                 android:drawableTop="@drawable/ic_map"
@@ -39,43 +38,27 @@
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/linearLayout2"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content" >
 
             <Button
-                android:id="@+id/button5"
+                android:id="@+id/v_btn_update"
                 android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:background="@drawable/bg_bar_button"
                 android:drawableTop="@android:drawable/ic_menu_rotate"
-                android:text="Download osm data" />
+                android:text="@string/title_update" />
 
             <Button
-                android:id="@+id/button4"
+                android:id="@+id/v_btn_prefs"
                 android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:background="@drawable/bg_bar_button"
                 android:drawableTop="@drawable/ic_settings"
                 android:text="@string/menu_settings" />
         </LinearLayout>
     </LinearLayout>
-
-    <RelativeLayout
-        android:id="@+id/loading"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:background="#eee"
-        android:visibility="gone" >
-
-        <ProgressBar
-            style="?android:attr/progressBarStyleLarge"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_centerVertical="true" />
-    </RelativeLayout>
 
 </FrameLayout>

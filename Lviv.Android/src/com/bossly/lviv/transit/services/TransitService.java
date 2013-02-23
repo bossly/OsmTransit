@@ -1,133 +1,146 @@
 package com.bossly.lviv.transit.services;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Calendar;
-import java.util.Date;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
 
-import android.app.Service;
+import android.app.IntentService;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-import android.os.IBinder;
-import android.preference.PreferenceManager;
+import android.net.Uri;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.content.LocalBroadcastManager;
+import android.util.Log;
 import android.widget.Toast;
 
+import com.bossly.lviv.transit.CoreApplication;
+import com.bossly.lviv.transit.R;
 import com.bossly.lviv.transit.activities.DashboardActivity;
+import com.bossly.lviv.transit.data.DatabaseSource;
+import com.bossly.lviv.transit.data.Node;
+import com.bossly.lviv.transit.data.Route;
+import com.bossly.lviv.transit.data.RoutesContract;
+import com.bossly.lviv.transit.data.WebAPI;
 
-public class TransitService extends Service {
+public class TransitService extends IntentService
+{
+	private final static String URL_FORMAT = "http://overpass-api.de/api/interpreter?data=relation(%s)%s%s";
+	private final static String ROUTE_BOUNDS_BOX = "49.7422316,23.8623047,49.9529871,24.2056274";
+	private final static String ROUTE_TAGS = "[\"route\"~\"trolleybus|tram|bus\"];>>;";
+	private final static String ROUTE_META = Uri.encode("out meta;");
 
-	private static final String PREF_LAST_UPDATE = "pref_last_date";
+	public static final int UPDATE_NOTIFICATION_ID = 0x01;
+	public final static String ACTION_UPDATED = "TransitService.updated";
 
-	public static final String PREF_WIFI_ONLY = "wifi_only";
+	private boolean mIsRunning = false;
 
-	// routes update every day
-	private static final long UPDATE_TIME = 24 * 60 * 60 * 1000;
-
-	private SharedPreferences prefs;
-
-	private Date m_lastUpdateDate;
-
-	@Override
-	public IBinder onBind(Intent arg0) {
-		// TODO Auto-generated method stub
-		return null;
+	public TransitService()
+	{
+		super("TransitService");
 	}
 
 	@Override
-	public void onCreate() {
-		// TODO Auto-generated method stub
-		super.onCreate();
+	public void onStart(Intent intent, int startId)
+	{
+		if (mIsRunning)
+		{
+			Toast.makeText(this, "Updating is already statred", Toast.LENGTH_SHORT).show();
+		}
+		else
+		{
+			super.onStart(intent, startId);
+		}
 	}
 
 	@Override
-	public void onStart(Intent intent, int startId) {
-		
-		// TODO Auto-generated method stub
-		super.onStart(intent, startId);
+	protected void onHandleIntent(Intent intent)
+	{
+		mIsRunning = true;
+		NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this);
+		NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
-		prefs = PreferenceManager
-				.getDefaultSharedPreferences(getApplicationContext());
+		notificationBuilder.setSmallIcon(R.drawable.ic_update_service);
+		notificationBuilder.setContentTitle(getString(R.string.app_name));
+		notificationBuilder.setContentText(getString(R.string.title_data_loading));
+		notificationBuilder.setAutoCancel(false);
+		notificationBuilder.setContentIntent(PendingIntent.getActivity(this, 0, new Intent(this,
+				DashboardActivity.class), 0));
 
-		long last_date = prefs.getLong(PREF_LAST_UPDATE, 0);
-		m_lastUpdateDate = (last_date > 0) ? new Date(last_date) : new Date(0);
+		notificationBuilder.setProgress(0, 0, true);
 
-		long current = Calendar.getInstance().getTimeInMillis();
+		Notification n = notificationBuilder.build();
 
-		boolean wifi_only = prefs.getBoolean(PREF_WIFI_ONLY, true);
+		n.flags |= Notification.FLAG_NO_CLEAR;
 
-		ConnectivityManager connManager = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
-		NetworkInfo mWifi = connManager
-				.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+		notificationManager.notify(UPDATE_NOTIFICATION_ID, n);
 
-		if (current - m_lastUpdateDate.getTime() > UPDATE_TIME) {
-			if ((wifi_only && mWifi.isConnected()) || !wifi_only) {
-				// Do whatever
-				Toast.makeText(this, "start update routes", Toast.LENGTH_LONG)
-						.show();
+		String link = String.format(URL_FORMAT, ROUTE_BOUNDS_BOX, ROUTE_TAGS, ROUTE_META);
+		ArrayList<Route> routes = null;
 
-				// check for updated and notify about it
-				tryToUpdate();
+		try
+		{
+			routes = new WebAPI().parseTransitInfoByUrl(new URL(link));
+		}
+		catch (MalformedURLException e)
+		{
+			e.printStackTrace();
+		}
+
+		if (routes != null)
+		{
+			// save to db
+			DatabaseSource db = new DatabaseSource(this);
+			db.open();
+			db.beginTransaction();
+			db.clear();
+			int added = 0;
+			int index = 0;
+
+			ContentValues pointValues = new ContentValues();
+
+			for (Route route : routes)
+			{
+				// ignore routes out of city
+				if (route.insideCity(49.7422316, 23.8623047, 49.9529871, 24.2056274))
+				{
+					long routeId = db.insertRoute(route.id, route.getName(), route.route,
+							route.genDescription(), route.genPath());
+
+					if (routeId == -1)
+						Log.e(DashboardActivity.class.getName(), "Can't add item");
+
+					for (Node node : route.getNodes())
+					{
+						pointValues.put(RoutesContract.PointData.ROUTE_ID, routeId);
+						pointValues.put(RoutesContract.PointData.LATITUDE, node.lat);
+						pointValues.put(RoutesContract.PointData.LONGITUDE, node.lon);
+
+						db.insertNode(pointValues);
+					}
+
+					added++;
+
+					notificationBuilder.setProgress(routes.size(), index++, false);
+					notificationManager.notify(UPDATE_NOTIFICATION_ID, notificationBuilder.build());
+				}
 			}
-		}
-	}
 
-	private void tryToUpdate() {
-		
-		// check user option
-		SharedPreferences prefs = PreferenceManager
-				.getDefaultSharedPreferences(getApplicationContext());
+			Log.d(DashboardActivity.class.getName(), "Routes addded to db: " + added);
 
-		boolean needCheck = prefs.getBoolean("autocheck", true);
-		Date lastFromServlet;
-
-		if (needCheck) {
-			lastFromServlet = new Date(System.currentTimeMillis());
-		} else {
-			lastFromServlet = new Date(0);
+			db.endTransaction();
+			
+			CoreApplication.get(this).data = db.getRoutes();
+			
+			db.close();
 		}
 
-		boolean needDownloadData = true;
+		notificationManager.cancel(UPDATE_NOTIFICATION_ID);
 
-		File file = new File(getCacheDir(), "transit_data.zip");
-
-		if (!file.exists()) {
-			try {
-				file.createNewFile();
-			} catch (IOException e) {
-			}
-		}
-		// if cache exist - check if it latest version
-		else {
-			if (m_lastUpdateDate != null
-					&& (System.currentTimeMillis() - m_lastUpdateDate.getTime()) < UPDATE_TIME) {
-
-				// in server old data. no need to download data
-				needDownloadData = false;
-			}
-		}
-
-		if (needDownloadData && lastFromServlet != null) {
-
-			prefs.edit().putLong(PREF_LAST_UPDATE, lastFromServlet.getTime())
-					.commit();
-
-			Intent intent = new Intent(getApplicationContext(),
-					DashboardActivity.class);
-			intent.putExtra("ppath", file.getAbsolutePath());
-			intent.putExtra("download", true);
-			intent.putExtra("version", lastFromServlet.getTime());
-			intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-
-			boolean autoupdate = prefs.getBoolean("autoupdate", true);
-
-			if (autoupdate) {
-				intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-				startActivity(intent);
-			}
-		}
-
-		stopSelf();
+		LocalBroadcastManager.getInstance(this).sendBroadcast(new Intent(ACTION_UPDATED));
+		mIsRunning = false;
 	}
 }
