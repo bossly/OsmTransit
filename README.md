@@ -12,9 +12,13 @@ Transit routes for L'viv, Ukraine
 <li>NETWORK_STATE - для провірки чи є wifi підключення</li>
 </ul>
 
+<b>Доступний для завантаження на <a href="https://play.google.com/store/apps/details?id=com.bossly.lviv.transit">Google Play</a></b>
+
 <h2>iOS version: [unpublished]</h2>
 </br>
 
 <h2>Посилання</h2>
-Web: <a href="https://sites.google.com/site/baddroidlabs/home/transport-lvova">https://sites.google.com/site/baddroidlabs/home/transport-lvova</a></ul>
-Routes source: <a href="http://osm.org">osm.org</a>
+<ul>
+<li>Web: <a href="https://sites.google.com/site/baddroidlabs/home/transport-lvova">https://sites.google.com/site/baddroidlabs/home/transport-lvova</a></ul></li>
+<li>Routes source: <a href="http://osm.org">osm.org</a></li>
+</ul>
