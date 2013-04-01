@@ -19,6 +19,6 @@ Transit routes for L'viv, Ukraine
 
 <h2>Посилання</h2>
 <ul>
-<li>Web: <a href="https://sites.google.com/site/baddroidlabs/home/transport-lvova">https://sites.google.com/site/baddroidlabs/home/transport-lvova</a></ul></li>
+<li>Web: <a href="https://sites.google.com/site/baddroidlabs/home/transport-lvova">https://sites.google.com/site/baddroidlabs/home/transport-lvova</a></li>
 <li>Routes source: <a href="http://osm.org">osm.org</a></li>
 </ul>
