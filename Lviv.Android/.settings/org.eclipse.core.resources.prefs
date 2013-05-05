@@ -1,7 +1,5 @@
-#Wed Feb 29 11:29:49 GMT+02:00 2012
 eclipse.preferences.version=1
 encoding//src/com/bossly/lviv/transit/Route.java=UTF-8
 encoding//src/com/bossly/lviv/transit/fragments/NearRoutesFragment.java=UTF-8
-encoding//src/com/bossly/lviv/transit/services/TrackingService.java=UTF-8
 encoding//src/com/bossly/lviv/transit/services/TransitService.java=UTF-8
 encoding/changelog.txt=UTF-8

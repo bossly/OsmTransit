@@ -7,55 +7,13 @@ import java.util.List;
 import java.util.Random;
 
 import android.location.Location;
+import android.os.Build;
 
 public class GeoUtils
 {
 
 	static Random r = new Random();
 
-	public static ArrayList<Route> filterRoutes2(List<Route> data, double lat, double lng,
-			double max_dist)
-	{
-
-		ArrayList<Route> nearest = null;
-
-		if (data != null)
-		{
-			nearest = new ArrayList<Route>();
-
-			for (Route route : data)
-			{
-
-				// calc short way to route
-				if (route.path != null && route.path.length() > 0)
-				{
-					String[] points = route.path.split(";");
-
-					for (int j = 0, count = points.length; j < count; j++)
-					{
-						String[] coord = points[j].split(",");
-
-						double clat = Double.parseDouble(coord[0]);
-						double clng = Double.parseDouble(coord[1]);
-
-						double distance = Point2D.distance(lat, lng, clat, clng);
-
-						route.min_distance = distance;
-						// if (distance >= 0 && distance < max_dist) {
-						// nearest.add(route);
-						// break;
-						// }
-					}
-				}
-
-				route.min_distance = r.nextInt(100); // unknown
-				nearest.add(route);
-			}
-
-		}
-
-		return nearest;
-	}
 
 	public static ArrayList<Route> filterRoutes(List<Route> data, double lat, double lng,
 			double max_dist)
@@ -213,6 +171,10 @@ public class GeoUtils
 	}
 
 	/* Determine location */
+	
+	private static boolean isEmualtor() {
+		return "google_sdk".equals(Build.PRODUCT);
+	}
 
 	/**
 	 * Determines whether one Location reading is better than the current Location fix
@@ -225,6 +187,8 @@ public class GeoUtils
 	public static boolean isBetterLocation(Location location, Location currentBestLocation,
 			long max_min)
 	{
+		if(isEmualtor())
+			return true;
 
 		if (currentBestLocation == null)
 		{

@@ -10,7 +10,6 @@ import org.xml.sax.Attributes;
 import android.util.Log;
 
 import com.bossly.lviv.transit.GeoUtils.Point2D;
-import com.bossly.lviv.transit.utils.CommonUtils;
 
 public class Route
 {
@@ -110,7 +109,7 @@ public class Route
 		}
 	}
 
-	private final static Pattern NAME_PATTERN = Pattern.compile("(^.*[¹]\\s\\S*)");
+	private final static Pattern NAME_PATTERN = Pattern.compile("(^.*[ï¿½]\\s\\S*)");
 
 	public String getName()
 	{

@@ -38,4 +38,7 @@
     <string name="srv_warning_exit_title">Пригодуйтеся виходити</string>
     <string name="srv_warning_exit_msg">Натисніть, щоб видалити повідомлення</string>
 
+    <string name="title_all">Всі [а-Я]</string>
+    <string name="title_near_routes">Поблизу</string>
+    
 </resources>

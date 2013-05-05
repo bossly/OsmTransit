@@ -2,17 +2,20 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.bossly.lviv.transit"
     android:installLocation="preferExternal"
-    android:versionCode="22"
-    android:versionName="1.5.2" >
+    android:versionCode="24"
+    android:versionName="1.6.0" >
 
     <uses-sdk
-        android:minSdkVersion="8"
+        android:minSdkVersion="7"
         android:targetSdkVersion="17" />
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <supports-screens
         android:anyDensity="true"
@@ -20,10 +23,6 @@
         android:normalScreens="true"
         android:resizeable="true"
         android:smallScreens="true" />
-
-    <uses-permission android:name="android.permission.VIBRATE" />
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
         android:name="CoreApplication"
@@ -46,11 +45,25 @@
         <activity
             android:name="com.bossly.lviv.transit.activities.SettingsActivity"
             android:screenOrientation="portrait" />
-        <activity android:name="com.bossly.lviv.transit.activities.RouteMapActivity" />
+        <activity android:name="com.bossly.lviv.transit.activities.RouteMapActivity" >
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" >
+                </action>
+
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data android:mimeType="text/plain" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data android:scheme="geo" />
+            </intent-filter>
+        </activity>
 
         <service android:name="com.bossly.lviv.transit.services.TransitService" />
-        <service android:name="com.bossly.lviv.transit.services.TrackingService" >
-        </service>
 
         <provider
             android:name="com.bossly.lviv.transit.data.RoutesDataProvider"
