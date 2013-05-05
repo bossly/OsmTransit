@@ -7,13 +7,11 @@ import java.util.List;
 import android.app.ListActivity;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.TextView;
@@ -23,6 +21,7 @@ import com.bossly.lviv.transit.GeoUtils;
 import com.bossly.lviv.transit.R;
 import com.bossly.lviv.transit.Route;
 import com.bossly.lviv.transit.RouteAdapter;
+import com.bossly.lviv.transit.data.DatabaseSource;
 
 public class RouteMapActivity extends ListActivity implements LocationListener {
 
@@ -74,12 +73,6 @@ public class RouteMapActivity extends ListActivity implements LocationListener {
 
 		m_manager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 	}
-
-	Drawable da;
-
-	Drawable db;
-
-	Drawable dc;
 
 	@Override
 	protected void onResume() {
@@ -151,6 +144,14 @@ public class RouteMapActivity extends ListActivity implements LocationListener {
 		if (m_location != null && m_locationTo != null) {
 
 			ArrayList<Route> data = CoreApplication.get(RouteMapActivity.this).data;
+			
+			if(data == null)
+			{
+				DatabaseSource db = new DatabaseSource(this);
+				db.open();
+				data = db.getRoutes();
+				db.close();
+			}
 
 			if (data == null)
 				return;

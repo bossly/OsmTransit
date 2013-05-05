@@ -4,41 +4,6 @@
     android:layout_height="fill_parent"
     android:orientation="vertical" >
 
-    <LinearLayout
-        android:id="@+id/v_search_container"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:background="@android:drawable/bottom_bar"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:padding="0dp" >
-
-        <EditText
-            android:id="@+id/v_search"
-            android:layout_width="0dip"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="5dp"
-            android:layout_marginTop="2dp"
-            android:layout_weight="1"
-            android:drawableLeft="@drawable/ic_btn_search"
-            android:drawablePadding="5dp"
-            android:hint="@string/filter_hint"
-            android:inputType="text|textFilter"
-            android:lines="1"
-            android:singleLine="true" >
-        </EditText>
-
-        <ImageButton
-            android:id="@+id/v_clear"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="5dp"
-            android:layout_marginTop="2dp"
-            android:paddingLeft="15dp"
-            android:paddingRight="15dp"
-            android:src="@drawable/ic_action_clear" />
-    </LinearLayout>
-
     <RadioGroup
         android:id="@+id/v_rdgp_routes"
         android:layout_width="fill_parent"

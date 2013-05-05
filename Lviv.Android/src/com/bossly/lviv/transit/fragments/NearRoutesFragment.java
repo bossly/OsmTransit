@@ -18,22 +18,16 @@ import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.CursorAdapter;
-import android.text.Editable;
 import android.text.TextUtils;
-import android.text.TextWatcher;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.RadioGroup;
 import android.widget.TextView;
-import android.widget.TextView.OnEditorActionListener;
 
 import com.bossly.lviv.transit.GeoUtils;
 import com.bossly.lviv.transit.R;
@@ -42,14 +36,12 @@ import com.bossly.lviv.transit.data.RoutesContract;
 import com.bossly.lviv.transit.data.RoutesContract.RouteData;
 
 public class NearRoutesFragment extends Fragment implements
-		LoaderCallbacks<Cursor>, TextWatcher, OnClickListener,
-		OnItemClickListener, LocationListener,
+		LoaderCallbacks<Cursor>, OnItemClickListener, LocationListener,
 		android.widget.RadioGroup.OnCheckedChangeListener {
+	
 	private static final int TWO_MINUTES = 1000 * 60 * 2;
 
 	private static final double BOUNDS_SIZE = 0.003;
-
-	public EditText vEditText;
 
 	public ListView vListView;
 
@@ -88,35 +80,15 @@ public class NearRoutesFragment extends Fragment implements
 		View content = inflater.inflate(R.layout.fr_near_routes, container,
 				false);
 
-		vEditText = (EditText) content.findViewById(R.id.v_search);
 		vListView = (ListView) content.findViewById(android.R.id.list);
 		RadioGroup radio = (RadioGroup) content
 				.findViewById(R.id.v_rdgp_routes);
 		radio.setOnCheckedChangeListener(this);
 
-		vEditText.addTextChangedListener(this);
-		vEditText.setOnEditorActionListener(new OnEditorActionListener() {
-
-			@Override
-			public boolean onEditorAction(TextView v, int keyCode,
-					KeyEvent event) {
-				if (keyCode == KeyEvent.KEYCODE_ENTER
-						|| keyCode == KeyEvent.KEYCODE_CALL) {
-					hideKeyboard();
-
-					return true;
-				}
-
-				return false;
-			}
-		});
-
 		vListView.setEmptyView(content.findViewById(android.R.id.empty));
 		vListView.setOnItemClickListener(this);
 
 		m_textStatus = (TextView) content.findViewById(R.id.v_status);
-
-		content.findViewById(R.id.v_clear).setOnClickListener(this);
 
 		if (savedInstanceState != null) {
 			scroll_y = savedInstanceState.getInt("scroll_y");
@@ -152,40 +124,20 @@ public class NearRoutesFragment extends Fragment implements
 		InputMethodManager imm = (InputMethodManager) getActivity()
 				.getSystemService(Context.INPUT_METHOD_SERVICE);
 
-		imm.hideSoftInputFromWindow(vEditText.getWindowToken(), 0);
+		// imm.hideSoftInputFromWindow(vEditText.getWindowToken(), 0);
 	}
 
 	/* TextWatcher */
 
-	@Override
-	public void afterTextChanged(Editable e) {
-	}
-
-	@Override
-	public void beforeTextChanged(CharSequence s, int start, int count,
-			int after) {
-	}
-
-	@Override
-	public void onTextChanged(CharSequence s, int start, int before, int count) {
-		mCursorFilter = s.toString();
+	public void setFilter(String query) {
+		mCursorFilter = query;
 		getLoaderManager().restartLoader(0, null, this);
 
 		if (TextUtils.isEmpty(mCursorFilter)) {
-			mCursorAdapter.setFilterHighlight(null);
+			// mCursorAdapter.setFilterHighlight(null);
 		} else {
 			mCursorAdapter.setFilterHighlight(mCursorFilter.split(" "));
 		}
-	}
-
-	@Override
-	public void onResume() {
-		super.onResume();
-	}
-
-	@Override
-	public void onClick(View v) {
-		vEditText.setText(new String());
 	}
 
 	/* OnItemClickListener */
@@ -199,7 +151,8 @@ public class NearRoutesFragment extends Fragment implements
 
 		StringBuilder builder = new StringBuilder();
 		builder.append("http://maps.googleapis.com/maps/api/staticmap");
-		builder.append("?size=" + getView().getWidth() + "x" + getView().getHeight());
+		builder.append("?size=" + getView().getWidth() + "x"
+				+ getView().getHeight());
 		builder.append("&path=color:0x0000ff|weight:5");
 
 		Uri routeUri = ContentUris.withAppendedId(RouteData.CONTENT_URI, id);
