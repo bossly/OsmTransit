@@ -3,12 +3,8 @@
 
     <string name="app_name">Transit</string>
     <string name="no_data">No data</string>
-    <string name="update_available_title">New updates available</string>
-    <string name="update_available_msg">New transit data available. Download changes?\n(Data size: ~60Кб  )</string>
     <string name="data_updated">Routes updated</string>
     <string name="location_determine">Wait while phone determine your location</string>
-    <string name="report_problem_title">Report a problem</string>
-    <string name="report_problem_added">Thanks, for help!</string>
     <string name="dlg_location_title">Location settings</string>
     <string name="dlg_location_message">Please, turn on GPS in settings, for get better accuracy.</string>
     <string name="dlg_settings">Settings</string>
@@ -16,7 +12,6 @@
     <string name="menu_routes_all">Routes</string>
     <string name="menu_map">Map (beta)</string>
     <string name="menu_settings">Settings</string>
-    <string name="filter_hint">наукова центр ашан …</string>
     <string name="button_direction_to">To</string>
     <string name="button_direction_from">From</string>
 
@@ -26,24 +21,13 @@
     <string name="pref_check_title">Check updates</string>
     <string name="pref_autoupdate_summary">Update routes automatically</string>
     <string name="pref_autoupdate_title">Autoupdate</string>
-    <string name="pref_report_summary">Reports will send on startup</string>
-    <string name="pref_report_title">Send reports</string>
-    <string name="pref_license_summary">View license agreement</string>
-    <string name="pref_license_title">License</string>
     <string name="pref_general">General</string>
-    <string name="srv_warning_title">Warning you on 500 meters until (В) is on.</string>
-    <string name="srv_warning_msg">Press to disable tracking</string>
-    <string name="srv_warning_exit_title">Prepare to exit</string>
-    <string name="srv_warning_exit_msg">Press to cancel warning</string>
 
     <dimen name="stroke_width">1dip</dimen>
 
-    <string name="title_data_loading">Loading data...</string>
-
+    <string name="title_data_loading">Loading data…</string>
     <string name="title_update">Download osm data</string>
-
     <string name="title_all">Всі [а-Я]</string>
-
     <string name="title_near_routes">Поблизу</string>
 
 </resources>

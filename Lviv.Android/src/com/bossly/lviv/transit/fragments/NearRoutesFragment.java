@@ -22,7 +22,6 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
@@ -38,7 +37,7 @@ import com.bossly.lviv.transit.data.RoutesContract.RouteData;
 public class NearRoutesFragment extends Fragment implements
 		LoaderCallbacks<Cursor>, OnItemClickListener, LocationListener,
 		android.widget.RadioGroup.OnCheckedChangeListener {
-	
+
 	private static final int TWO_MINUTES = 1000 * 60 * 2;
 
 	private static final double BOUNDS_SIZE = 0.003;
@@ -119,22 +118,17 @@ public class NearRoutesFragment extends Fragment implements
 		outState.putInt("selected", selected);
 	}
 
-	private void hideKeyboard() {
-		// hide virtual keyboard
-		InputMethodManager imm = (InputMethodManager) getActivity()
-				.getSystemService(Context.INPUT_METHOD_SERVICE);
-
-		// imm.hideSoftInputFromWindow(vEditText.getWindowToken(), 0);
-	}
-
 	/* TextWatcher */
 
 	public void setFilter(String query) {
 		mCursorFilter = query;
 		getLoaderManager().restartLoader(0, null, this);
 
+		if(mCursorAdapter == null)
+			return;
+		
 		if (TextUtils.isEmpty(mCursorFilter)) {
-			// mCursorAdapter.setFilterHighlight(null);
+			mCursorAdapter.setFilterHighlight(null);
 		} else {
 			mCursorAdapter.setFilterHighlight(mCursorFilter.split(" "));
 		}
@@ -145,7 +139,6 @@ public class NearRoutesFragment extends Fragment implements
 	@Override
 	public void onItemClick(AdapterView<?> adapterView, View view,
 			int position, long id) {
-		hideKeyboard();
 
 		Intent mapIntent = new Intent(Intent.ACTION_VIEW);
 

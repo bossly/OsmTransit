@@ -48,7 +48,7 @@ public class TransitService extends IntentService
 	{
 		if (mIsRunning)
 		{
-			Toast.makeText(this, "Updating is already statred", Toast.LENGTH_SHORT).show();
+			Toast.makeText(this, "Updating is already started", Toast.LENGTH_SHORT).show();
 		}
 		else
 		{

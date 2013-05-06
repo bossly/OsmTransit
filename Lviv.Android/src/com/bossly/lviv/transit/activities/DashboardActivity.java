@@ -1,6 +1,5 @@
 package com.bossly.lviv.transit.activities;
 
-import android.app.SearchManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -9,20 +8,19 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.SearchViewCompat;
+import android.support.v4.widget.SearchViewCompat.OnQueryTextListenerCompat;
 import android.view.View;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
-import com.actionbarsherlock.widget.SearchView;
 import com.bossly.lviv.transit.R;
 import com.bossly.lviv.transit.fragments.NearRoutesFragment;
 import com.bossly.lviv.transit.services.TransitService;
 
 public class DashboardActivity extends SherlockFragmentActivity {
 
-	public static final String PREF_LAST_UPDATE = "pref_last_date";
 	final NearRoutesFragment nearFragment = new NearRoutesFragment();
 
 	private BroadcastReceiver mServiceReceiver = new BroadcastReceiver() {
@@ -66,27 +64,20 @@ public class DashboardActivity extends SherlockFragmentActivity {
 		View searchView = SearchViewCompat.newSearchView(context);
 
 		if (searchView != null) {
-			android.widget.SearchView search = (android.widget.SearchView) searchView;
-			// Use native implementation
-			search.setOnQueryTextListener(new android.widget.SearchView.OnQueryTextListener() {
-				@Override
-				public boolean onQueryTextChange(String newText) {
-					// Do something
-					// System.out.println("onQueryTextChange----------");
-					nearFragment.setFilter(newText);
-					return true;
-				}
 
-				@Override
-				public boolean onQueryTextSubmit(String query) {
-					// Do something
-					System.out.println("onQueryTextSubmit----------");
-					return true;
-				}
-			});
+			SearchViewCompat.setOnQueryTextListener(searchView,
+					new OnQueryTextListenerCompat() {
+						@Override
+						public boolean onQueryTextChange(String newText) {
+							nearFragment.setFilter(newText);
+							return true;
+						}
 
-		} else {
-			// Use simple compatibility implementation
+						@Override
+						public boolean onQueryTextSubmit(String query) {
+							return true;
+						}
+					});
 		}
 
 		MenuItem searchItem = menu.add("search").setIcon(
@@ -117,4 +108,5 @@ public class DashboardActivity extends SherlockFragmentActivity {
 		// TODO Auto-generated method stub
 		return super.onOptionsItemSelected(item);
 	}
+
 }

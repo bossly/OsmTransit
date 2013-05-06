@@ -90,7 +90,7 @@ public class DatabaseSource
 		values.put(DatabaseHelper.COLUMN_ROUTE_TYPE, type);
 		values.put(DatabaseHelper.COLUMN_ROUTE_DIRECTION, desc);
 		values.put(DatabaseHelper.COLUMN_ROUTE_PATH, path);
-		values.put(DatabaseHelper.COLUMN_ROUTE_SEARCH, desc.toLowerCase());
+		values.put(DatabaseHelper.COLUMN_ROUTE_SEARCH, name.toLowerCase() + " " + desc.toLowerCase());
 
 		return database.insert(DatabaseHelper.TABLE_ROUTES, null, values);
 	}

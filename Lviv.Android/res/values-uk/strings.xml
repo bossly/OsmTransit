@@ -3,12 +3,8 @@
 
     <string name="app_name">Транспорт</string>
     <string name="no_data">Немає даних</string>
-    <string name="update_available_title">Доступні оновлення</string>
-    <string name="update_available_msg">Нові дані про маршрути доступні в мережі. Завантажити зміни?\n(Розмір даних: ~60Кб  )</string>
     <string name="data_updated">Маршрути оновлено</string>
     <string name="location_determine">Зачекайте поки визначається ваше місцезнаходження</string>
-    <string name="report_problem_title">Опишіть помилку</string>
-    <string name="report_problem_added">Дякую за допомогу!</string>
     <string name="dlg_location_title">Налаштування місцезнаходження</string>
     <string name="dlg_location_message">Увімкніть GPS в налаштуваннях, щоб покращити точність визначення вашого місцезнаходження</string>
     <string name="dlg_settings">Налаштування</string>
@@ -16,7 +12,6 @@
     <string name="menu_routes_all">Маршрути</string>
     <string name="menu_map">Карта (beta)</string>
     <string name="menu_settings">Налаштування</string>
-    <string name="filter_hint">наукова центр ашан …</string>
     <string name="button_direction_to">До</string>
     <string name="button_direction_from">Від</string>
     <string name="title_update">Обновити дані</string>
@@ -28,16 +23,7 @@
     <string name="pref_check_title">Провіряти оновлення</string>
     <string name="pref_autoupdate_summary">Оновлювати маршрути автоматично</string>
     <string name="pref_autoupdate_title">Оновлення</string>
-    <string name="pref_report_summary">Повідомлення про помилки будуть відсилатися при запуску програми</string>
-    <string name="pref_report_title">Відправляти описи помилок</string>
-    <string name="pref_license_summary">Переглядути ліцензійну угоду</string>
-    <string name="pref_license_title">Ліцензія</string>
     <string name="pref_general">Основне</string>
-    <string name="srv_warning_title">Попередження за 500м від (В) вкл.</string>
-    <string name="srv_warning_msg">Натисніть, щоб вимкнути</string>
-    <string name="srv_warning_exit_title">Пригодуйтеся виходити</string>
-    <string name="srv_warning_exit_msg">Натисніть, щоб видалити повідомлення</string>
-
     <string name="title_all">Всі [а-Я]</string>
     <string name="title_near_routes">Поблизу</string>
     
