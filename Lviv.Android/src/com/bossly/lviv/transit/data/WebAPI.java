@@ -18,6 +18,9 @@ public class WebAPI extends DefaultHandler
 	// http://overpass-api.de/api/interpreter?
 	// data=relation(49.7422316,23.8623047,49.9529871,24.2056274)[route=trolleybus];out
 	// meta;
+	// lviv(49.7422316,23.8623047,49.9529871,24.2056274) - yes
+	// kyiv(50.61, 30.263, 50.281, 30.81) - yes
+	// ternopil (49.5924, 25.5228, 49.5085, 25.6594) - no trasit
 
 	public static HashMap<Long, Node> nodes = null;
 	public static HashMap<Long, Way> ways = null;

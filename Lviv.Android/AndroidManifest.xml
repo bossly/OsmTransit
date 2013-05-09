@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.bossly.lviv.transit"
-    android:installLocation="preferExternal"
+    android:installLocation="auto"
     android:versionCode="24"
     android:versionName="1.6.0" >
 
@@ -26,12 +26,11 @@
 
     <application
         android:name="CoreApplication"
-        android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@android:style/Theme.Black.NoTitleBar" >
         <activity
-            android:name="com.bossly.lviv.transit.activities.DashboardActivity"
+            android:name=".activities.RoutesActivity"
             android:launchMode="singleInstance"
             android:screenOrientation="portrait" >
             <intent-filter>
@@ -41,9 +40,14 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.bossly.lviv.transit.activities.SettingsActivity"
+            android:name=".activities.SettingsActivity"
             android:screenOrientation="portrait" />
-        <activity android:name="com.bossly.lviv.transit.activities.RouteMapActivity" >
+        <activity android:name=".activities.SearchRouteActivity" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.SEND" >
                 </action>
@@ -61,10 +65,10 @@
             </intent-filter>
         </activity>
 
-        <service android:name="com.bossly.lviv.transit.services.TransitService" />
+        <service android:name=".services.TransitService" />
 
         <provider
-            android:name="com.bossly.lviv.transit.data.RoutesDataProvider"
+            android:name=".data.RoutesDataProvider"
             android:authorities="com.bossly.lviv.transit.provider"
             android:enabled="true"
             android:exported="false" >

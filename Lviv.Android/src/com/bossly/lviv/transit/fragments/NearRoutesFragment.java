@@ -1,16 +1,9 @@
 package com.bossly.lviv.transit.fragments;
 
-import android.app.Activity;
-import android.app.AlertDialog.Builder;
 import android.content.ContentUris;
-import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -31,11 +24,12 @@ import android.widget.TextView;
 import com.bossly.lviv.transit.GeoUtils;
 import com.bossly.lviv.transit.R;
 import com.bossly.lviv.transit.RouteCursorAdapter;
+import com.bossly.lviv.transit.activities.GeoLocationBaseActivity;
 import com.bossly.lviv.transit.data.RoutesContract;
 import com.bossly.lviv.transit.data.RoutesContract.RouteData;
 
 public class NearRoutesFragment extends Fragment implements
-		LoaderCallbacks<Cursor>, OnItemClickListener, LocationListener,
+		LoaderCallbacks<Cursor>, OnItemClickListener,
 		android.widget.RadioGroup.OnCheckedChangeListener {
 
 	private static final int TWO_MINUTES = 1000 * 60 * 2;
@@ -54,28 +48,14 @@ public class NearRoutesFragment extends Fragment implements
 
 	private Location m_location = null;
 
-	private LocationManager m_manager;
-
 	private RouteCursorAdapter mCursorAdapter;
 
 	private String mCursorFilter;
 
 	@Override
-	public void onAttach(Activity activity) {
-		super.onAttach(activity);
-		m_manager = (LocationManager) activity
-				.getSystemService(Context.LOCATION_SERVICE);
-	}
-
-	@Override
-	public void onDetach() {
-		super.onDetach();
-		stopDetermineUserLocation();
-	}
-
-	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
+
 		View content = inflater.inflate(R.layout.fr_near_routes, container,
 				false);
 
@@ -124,9 +104,9 @@ public class NearRoutesFragment extends Fragment implements
 		mCursorFilter = query;
 		getLoaderManager().restartLoader(0, null, this);
 
-		if(mCursorAdapter == null)
+		if (mCursorAdapter == null)
 			return;
-		
+
 		if (TextUtils.isEmpty(mCursorFilter)) {
 			mCursorAdapter.setFilterHighlight(null);
 		} else {
@@ -140,14 +120,6 @@ public class NearRoutesFragment extends Fragment implements
 	public void onItemClick(AdapterView<?> adapterView, View view,
 			int position, long id) {
 
-		Intent mapIntent = new Intent(Intent.ACTION_VIEW);
-
-		StringBuilder builder = new StringBuilder();
-		builder.append("http://maps.googleapis.com/maps/api/staticmap");
-		builder.append("?size=" + getView().getWidth() + "x"
-				+ getView().getHeight());
-		builder.append("&path=color:0x0000ff|weight:5");
-
 		Uri routeUri = ContentUris.withAppendedId(RouteData.CONTENT_URI, id);
 		Cursor cursor = getActivity().getContentResolver().query(routeUri,
 				new String[] { RouteData.PATH }, null, null, null);
@@ -159,86 +131,24 @@ public class NearRoutesFragment extends Fragment implements
 				return;
 			}
 
-			String[] path = sway.substring(0, sway.length() - 1).split(";");
-
-			for (int j = 0; j < path.length; j++) {
-				String[] coors = path[j].split(",");
-
-				double lat = Double.parseDouble(coors[0]);
-				double lon = Double.parseDouble(coors[1]);
-
-				builder.append("|" + lat + "," + lon);
-			}
+			GeoUtils.displayMap(getActivity(), sway);
 		}
 
 		cursor.close();
-		builder.append("&sensor=true");
-
-		mapIntent.setData(Uri.parse(builder.toString()));
-		// show route on map
-		startActivity(mapIntent);
 	}
 
 	/* Search near routes */
+	public boolean onLocationUpdated(Location location) {
 
-	public void startDetermineUserLocation() {
-		if (m_manager != null) {
-			m_textStatus.setVisibility(View.VISIBLE);
-
-			if (m_manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-				Location location = m_manager
-						.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-				onLocationUpdated(location);
-
-				m_manager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
-						5 * 1000, 0, this);
-			} else {
-				// notify about GPS if off
-				Builder builder = new Builder(getActivity());
-				builder.setTitle(getString(R.string.dlg_location_title));
-				builder.setMessage(R.string.dlg_location_message);
-
-				builder.setPositiveButton(R.string.dlg_settings,
-						new DialogInterface.OnClickListener() {
-							@Override
-							public void onClick(DialogInterface dialog,
-									int which) {
-								startActivityForResult(
-										new Intent(
-												android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS),
-										0);
-							}
-						});
-
-				builder.setNegativeButton(android.R.string.cancel, null);
-
-				builder.show();
-			}
-
-			if (m_manager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
-				Location location = m_manager
-						.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-				onLocationUpdated(location);
-
-				m_manager.requestLocationUpdates(
-						LocationManager.NETWORK_PROVIDER, 5 * 1000, 0, this);
-			} else {
-				// notify user about network location feature
-			}
-		}
-	}
-
-	public void stopDetermineUserLocation() {
-		if (m_manager != null) {
-			m_location = null;
-			getLoaderManager().restartLoader(0, null, this);
-			m_textStatus.setVisibility(View.GONE);
-			m_manager.removeUpdates(this);
-		}
-	}
-
-	private boolean onLocationUpdated(Location location) {
 		boolean success = false;
+
+		if (location != null && location.getAccuracy() < 20) // if less than 20
+																// meters
+		{
+			// save user power. stop determine location
+			GeoLocationBaseActivity activity = (GeoLocationBaseActivity) getActivity();
+			activity.stopDetermineUserLocation();
+		}
 
 		if (location != null
 				&& GeoUtils.isBetterLocation(location, m_location, TWO_MINUTES)) {
@@ -274,42 +184,21 @@ public class NearRoutesFragment extends Fragment implements
 		return success;
 	}
 
-	/* LocationListener */
-
-	@Override
-	public void onLocationChanged(Location location) {
-		if (onLocationUpdated(location)) {
-
-			if (location.getAccuracy() < 20) // if less than 20 meters
-			{
-				// save user power. stop determine location
-				stopDetermineUserLocation();
-			}
-
-		}
-	}
-
-	@Override
-	public void onProviderDisabled(String provider) {
-	}
-
-	@Override
-	public void onProviderEnabled(String provider) {
-	}
-
-	@Override
-	public void onStatusChanged(String provider, int status, Bundle extras) {
-	}
-
 	@Override
 	public void onCheckedChanged(RadioGroup group, int checkedId) {
+		GeoLocationBaseActivity activity = (GeoLocationBaseActivity) getActivity();
+
 		switch (checkedId) {
 		case R.id.v_rd_near:
-			startDetermineUserLocation();
+			activity.startDetermineUserLocation();
+			m_textStatus.setVisibility(View.VISIBLE);
 			break;
 
 		case R.id.v_rd_default:
-			stopDetermineUserLocation();
+			activity.stopDetermineUserLocation();
+			m_location = null;
+			getLoaderManager().restartLoader(0, null, this);
+			m_textStatus.setVisibility(View.GONE);
 			break;
 		}
 	}

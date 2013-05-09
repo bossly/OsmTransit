@@ -17,9 +17,8 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.bossly.lviv.transit.CoreApplication;
 import com.bossly.lviv.transit.R;
-import com.bossly.lviv.transit.activities.DashboardActivity;
+import com.bossly.lviv.transit.activities.RoutesActivity;
 import com.bossly.lviv.transit.data.DatabaseSource;
 import com.bossly.lviv.transit.data.Node;
 import com.bossly.lviv.transit.data.Route;
@@ -29,7 +28,12 @@ import com.bossly.lviv.transit.data.WebAPI;
 public class TransitService extends IntentService
 {
 	private final static String URL_FORMAT = "http://overpass-api.de/api/interpreter?data=relation(%s)%s%s";
+	
+	// lviv(49.7422316,23.8623047,49.9529871,24.2056274) - yes
+	// kyiv(50.61, 30.263, 50.281, 30.81) - yes
 	private final static String ROUTE_BOUNDS_BOX = "49.7422316,23.8623047,49.9529871,24.2056274";
+	//private final static String ROUTE_BOUNDS_BOX = "50.281,30.8,50.61,30.263";
+
 	private final static String ROUTE_TAGS = "[\"route\"~\"trolleybus|tram|bus\"];>>;";
 	private final static String ROUTE_META = Uri.encode("out meta;");
 
@@ -68,7 +72,7 @@ public class TransitService extends IntentService
 		notificationBuilder.setContentText(getString(R.string.title_data_loading));
 		notificationBuilder.setAutoCancel(false);
 		notificationBuilder.setContentIntent(PendingIntent.getActivity(this, 0, new Intent(this,
-				DashboardActivity.class), 0));
+				RoutesActivity.class), 0));
 
 		notificationBuilder.setProgress(0, 0, true);
 
@@ -111,7 +115,7 @@ public class TransitService extends IntentService
 							route.genDescription(), route.genPath());
 
 					if (routeId == -1)
-						Log.e(DashboardActivity.class.getName(), "Can't add item");
+						Log.e(RoutesActivity.class.getName(), "Can't add item");
 
 					for (Node node : route.getNodes())
 					{
@@ -129,12 +133,9 @@ public class TransitService extends IntentService
 				}
 			}
 
-			Log.d(DashboardActivity.class.getName(), "Routes addded to db: " + added);
+			Log.d(RoutesActivity.class.getName(), "Routes addded to db: " + added);
 
 			db.endTransaction();
-			
-			CoreApplication.get(this).data = db.getRoutes();
-			
 			db.close();
 		}
 

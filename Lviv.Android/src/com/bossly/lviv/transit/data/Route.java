@@ -109,7 +109,7 @@ public class Route
 		}
 	}
 
-	private final static Pattern NAME_PATTERN = Pattern.compile("(^.*[�]\\s\\S*)");
+	private final static Pattern NAME_PATTERN = Pattern.compile("(^.*[\\u2116]\\s\\S*)");
 
 	public String getName()
 	{

@@ -4,14 +4,15 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.location.Location;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.SearchViewCompat;
 import android.support.v4.widget.SearchViewCompat.OnQueryTextListenerCompat;
 import android.view.View;
 
-import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
@@ -19,9 +20,9 @@ import com.bossly.lviv.transit.R;
 import com.bossly.lviv.transit.fragments.NearRoutesFragment;
 import com.bossly.lviv.transit.services.TransitService;
 
-public class DashboardActivity extends SherlockFragmentActivity {
+public class RoutesActivity extends GeoLocationBaseActivity {
 
-	final NearRoutesFragment nearFragment = new NearRoutesFragment();
+	private NearRoutesFragment nearFragment;
 
 	private BroadcastReceiver mServiceReceiver = new BroadcastReceiver() {
 		@Override
@@ -33,13 +34,19 @@ public class DashboardActivity extends SherlockFragmentActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		setTheme(R.style.Theme_Sherlock_Light_DarkActionBar);
+		final FragmentManager fragmentManager = getSupportFragmentManager();
 
 		if (savedInstanceState == null) {
-			FragmentTransaction transaction = getSupportFragmentManager()
+			nearFragment = new NearRoutesFragment();
+			
+			FragmentTransaction transaction = fragmentManager
 					.beginTransaction();
-			transaction.add(android.R.id.content, nearFragment);
+			transaction.add(android.R.id.content, nearFragment,
+					NearRoutesFragment.class.getName());
 			transaction.commit();
+		} else {
+			nearFragment = (NearRoutesFragment) fragmentManager
+					.findFragmentByTag(NearRoutesFragment.class.getName());
 		}
 
 		LocalBroadcastManager.getInstance(this).registerReceiver(
@@ -51,12 +58,15 @@ public class DashboardActivity extends SherlockFragmentActivity {
 	protected void onDestroy() {
 		super.onDestroy();
 
+		stopDetermineUserLocation();
+
 		LocalBroadcastManager.getInstance(this).unregisterReceiver(
 				mServiceReceiver);
 	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
+
 		MenuInflater inflater = getSupportMenuInflater();
 
 		// collapse search
@@ -107,6 +117,14 @@ public class DashboardActivity extends SherlockFragmentActivity {
 
 		// TODO Auto-generated method stub
 		return super.onOptionsItemSelected(item);
+	}
+
+	@Override
+	protected void onLocationUpdated(Location location) {
+
+		if (nearFragment != null) {
+			nearFragment.onLocationUpdated(location);
+		}
 	}
 
 }

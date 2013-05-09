@@ -1,40 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:orientation="vertical" >
 
     <LinearLayout
-        android:background="@android:color/darker_gray"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical" >
+        android:background="@android:color/darker_gray"
+        android:orientation="vertical"
+        android:visibility="gone" >
 
-        <TextView
+        <Button
             android:id="@+id/textFrom"
-            android:textColor="@android:color/white"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
             android:text="from"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content" />
+            android:textColor="@android:color/white" />
 
-        <TextView
+        <Button
             android:id="@+id/textTo"
-            android:textColor="@android:color/white"
-            android:text="to"
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:text="to"
+            android:textColor="@android:color/white" />
     </LinearLayout>
 
     <ListView
         android:id="@android:id/list"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" >
+        android:layout_height="wrap_content"
+        tools:listitem="@layout/item_route" >
     </ListView>
 
     <TextView
         android:id="@android:id/empty"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="fill_parent"
+        android:gravity="center"
         android:text="@string/no_data" />
 
 </LinearLayout>
