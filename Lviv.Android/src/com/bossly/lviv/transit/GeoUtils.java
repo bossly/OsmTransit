@@ -1,7 +1,5 @@
 package com.bossly.lviv.transit;
 
-import java.io.File;
-import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -13,15 +11,40 @@ import android.content.Intent;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Build;
-import android.os.Environment;
-import android.util.Log;
 
 public class GeoUtils {
 
 	static Random r = new Random();
 
+	public static Location parseGeo(String geoUri) {
+
+		Location location = null;
+		String geo_scheme = "geo:";
+
+		// parse geo:0,0?..
+		if (geoUri != null && geoUri.startsWith(geo_scheme)) {
+			int geo_latlon_end = geoUri.indexOf("?");
+			String[] latlon;
+
+			if (geo_latlon_end > 0) {
+				latlon = geoUri.substring(geo_scheme.length(), geo_latlon_end)
+						.split(",");
+			} else {
+				latlon = geoUri.substring(geo_scheme.length()).split(",");
+			}
+
+			double lat = Double.parseDouble(latlon[0]);
+			double lon = Double.parseDouble(latlon[1]);
+			location = new Location(geo_scheme);
+			location.setLatitude(lat);
+			location.setLongitude(lon);
+		}
+
+		return location;
+	}
+
 	public static void displayMap(Context context, String sway) {
-		
+
 		ArrayList<Location> points = new ArrayList<Location>();
 		StringBuilder builder = new StringBuilder();
 		builder.append("http://maps.googleapis.com/maps/api/staticmap");
@@ -43,9 +66,12 @@ public class GeoUtils {
 			temp.setLongitude(lon);
 			points.add(temp);
 		}
-		
-		builder.append("&sensor=true");
 
+		builder.append("&sensor=true");
+		Intent mapIntent = new Intent(Intent.ACTION_VIEW);
+		mapIntent.setData(Uri.parse(builder.toString()));
+
+		/*
 		Intent mapIntent = new Intent(Intent.ACTION_VIEW);
 
 		try {
@@ -78,43 +104,26 @@ public class GeoUtils {
 		// http://www.oruxmaps.com/oruxmapsmanual_ru.pdf
 		// http://www.locusmap.eu/download/
 
-		//Offline map on current position
-		//Intent i = new Intent("com.oruxmaps. VIEW_MAP_OFFLINE"); 
-		//Online map
+		// Offline map on current position
+		// Intent i = new Intent("com.oruxmaps. VIEW_MAP_OFFLINE");
+		// Online map
 		Intent i = new Intent("com.oruxmaps.VIEW_MAP_ONLINE");
-/*
-		// Waypoints
-		double[] targetLat = new double[points.size()];
-		double [] targetLon = new double[points.size()];
-		String [] targetNames = new String[points.size()];
-		
-		for (int index = 0; index < points.size(); index++) {
-			Location location = points.get(index);
-			targetLat[index] = location.getLatitude();
-			targetLon[index] = location.getLongitude();
-			targetNames[index] = location.getProvider();
-		}
-		
-		i.putExtra("targetLat", targetLat);
-		i.putExtra("targetLon", targetLon);
-		i.putExtra("targetName", targetNames);
-		*/
-		/*
-		//Track points
-		double[] targetLatPoints = new double[points.size()];
-		double [] targetLonPoints = new double[points.size()];
-		
-		for (int index = 0; index < points.size(); index++) {
-			Location location = points.get(index);
-			targetLatPoints[index] = location.getLatitude();
-			targetLonPoints[index] = location.getLongitude();
-		}
-		
-		i.putExtra("targetLatPoints", targetLatPoints);
-		i.putExtra("targetLonPoints", targetLonPoints);
 
-		startActivity(i);
-*/
+		/*
+		 * //Track points double[] targetLatPoints = new double[points.size()];
+		 * double [] targetLonPoints = new double[points.size()];
+		 * 
+		 * for (int index = 0; index < points.size(); index++) { Location
+		 * location = points.get(index); targetLatPoints[index] =
+		 * location.getLatitude(); targetLonPoints[index] =
+		 * location.getLongitude(); }
+		 * 
+		 * i.putExtra("targetLatPoints", targetLatPoints);
+		 * i.putExtra("targetLonPoints", targetLonPoints);
+		 * 
+		 * startActivity(i);
+		 */
+		
 		// show route on map
 		context.startActivity(mapIntent);
 	}

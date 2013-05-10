@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">Транспорт</string>
+    <string name="app_name">Громадський Транспорт</string>
     <string name="no_data">Немає даних</string>
     <string name="data_updated">Маршрути оновлено</string>
     <string name="location_determine">Зачекайте поки визначається ваше місцезнаходження</string>
@@ -15,7 +15,7 @@
     <string name="button_direction_to">До</string>
     <string name="button_direction_from">Від</string>
     <string name="title_update">Обновити дані</string>
-    <string name="title_data_loading">Загрузка даних...</string>
+    <string name="title_data_loading">Завантаження даних...</string>
     
     <!-- preference -->
 

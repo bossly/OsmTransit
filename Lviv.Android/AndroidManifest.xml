@@ -29,6 +29,8 @@
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@android:style/Theme.Black.NoTitleBar" >
+        
+        <!-- Main Activity used to show routes list -->
         <activity
             android:name=".activities.RoutesActivity"
             android:launchMode="singleInstance"
@@ -39,31 +41,35 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        
+        <!-- Activity to show user settings -->
         <activity
             android:name=".activities.SettingsActivity"
             android:screenOrientation="portrait" />
+        
+        <!-- Activity to find routes by points -->
+        <!--
         <activity android:name=".activities.SearchRouteActivity" >
+            
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            
             <intent-filter>
-                <action android:name="android.intent.action.SEND" >
-                </action>
-
+                <action android:name="android.intent.action.SEND" />
                 <category android:name="android.intent.category.DEFAULT" />
-
                 <data android:mimeType="text/plain" />
             </intent-filter>
+            
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
-
                 <category android:name="android.intent.category.DEFAULT" />
-
                 <data android:scheme="geo" />
             </intent-filter>
+            
         </activity>
+        -->
 
         <service android:name=".services.TransitService" />
 
@@ -73,6 +79,7 @@
             android:enabled="true"
             android:exported="false" >
         </provider>
+        
     </application>
 
 </manifest>

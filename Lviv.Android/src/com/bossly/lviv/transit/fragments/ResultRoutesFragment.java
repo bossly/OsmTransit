@@ -3,7 +3,6 @@ package com.bossly.lviv.transit.fragments;
 import java.util.ArrayList;
 
 import android.app.ProgressDialog;
-import android.location.Address;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -12,7 +11,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 
 import com.bossly.lviv.transit.GeoUtils;
 import com.bossly.lviv.transit.R;
@@ -37,10 +35,8 @@ public class ResultRoutesFragment extends ListFragment {
 		return view;
 	}
 
-	public void setDestination(Address r) {
-		m_locationTo = new Location("Unknown");
-		m_locationTo.setLatitude(r.getLatitude());
-		m_locationTo.setLongitude(r.getLongitude());
+	public void setDestination(Location destination) {
+		m_locationTo = destination;
 	}
 
 	public void onLocationUpdated(Location location) {
@@ -71,7 +67,7 @@ public class ResultRoutesFragment extends ListFragment {
 
 			ArrayList<Route> adapter = null;
 			Location from = params[0];
-			Location to = params[0];
+			Location to = params[1];
 
 			if (from != null && to != null) {
 

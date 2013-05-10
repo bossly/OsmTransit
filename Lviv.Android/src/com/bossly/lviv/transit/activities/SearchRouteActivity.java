@@ -1,24 +1,21 @@
 package com.bossly.lviv.transit.activities;
 
-import java.io.IOException;
-import java.util.List;
-
 import android.content.Intent;
-import android.location.Address;
-import android.location.Geocoder;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 
+import com.bossly.lviv.transit.GeoUtils;
 import com.bossly.lviv.transit.fragments.ResultRoutesFragment;
 
 public class SearchRouteActivity extends GeoLocationBaseActivity {
-
-	public static final double MAX_DISTANCE = 300; // meters
-	public static final String TAG_FRAGMENT = "tag_routes_fragment";
-
 	private ResultRoutesFragment fragment;
-	private Geocoder coder;
+
+	/*
+	 * This activity should process: geo:latitude,longitude
+	 * geo:latitude,longitude?z=zoom geo:0,0?q=my+street+address
+	 * geo:0,0?q=business+near+city
+	 */
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -29,38 +26,19 @@ public class SearchRouteActivity extends GeoLocationBaseActivity {
 			FragmentTransaction transaction = getSupportFragmentManager()
 					.beginTransaction();
 			fragment = new ResultRoutesFragment();
-			transaction.add(android.R.id.content, fragment, TAG_FRAGMENT);
+			transaction.add(android.R.id.content, fragment, fragment.getClass()
+					.getName());
 			transaction.commit();
 		} else {
 			fragment = (ResultRoutesFragment) getSupportFragmentManager()
-					.findFragmentByTag(TAG_FRAGMENT);
+					.findFragmentByTag(fragment.getClass().getName());
 		}
 
-		coder = new Geocoder(this);
 		String locationName = getIntent().getStringExtra(Intent.EXTRA_SUBJECT);
 
 		if (getIntent().getAction() == Intent.ACTION_VIEW) {
-			String data = getIntent().getDataString();
-			int index = data.indexOf("q=");
-			locationName = data.substring(index + 2);
-		}
-
-		if (locationName != null) {// && coder.isPresent()) {
-
-			try {
-				List<Address> result = coder.getFromLocationName(locationName,
-						1);
-
-				if (result.size() > 0) {
-					Address r = result.get(0);
-
-					fragment.setDestination(r);
-				}
-
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			Location loc = GeoUtils.parseGeo(locationName);
+			fragment.setDestination(loc);
 		}
 	}
 

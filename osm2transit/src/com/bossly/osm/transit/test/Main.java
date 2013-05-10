@@ -1,4 +1,4 @@
-package com.bossly.osm.transit;
+package com.bossly.osm.transit.test;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -24,7 +24,23 @@ import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import com.bossly.osm.transit.*;
+
 public class Main {
+
+	// http://overpass-api.de/api/interpreter?
+	// data=relation(49.7422316,23.8623047,49.9529871,24.2056274)[route=trolleybus];out
+	// meta;
+	// lviv(49.7422316,23.8623047,49.9529871,24.2056274) - yes
+	// kyiv(50.61, 30.263, 50.281, 30.81) - yes
+	// ternopil (49.5924, 25.5228, 49.5085, 25.6594) - no trasit
+
+	static Region Bounds_Lviv = new Region(49.7422316, 23.8623047, 49.9529871,
+			24.2056274);
+	
+	// big lviv - 49.67, 23.774, 50.004, 24.291
+
+	static Region Bounds_Kyiv = new Region(50.281, 30.263, 50.61, 30.81);
 
 	public static boolean DEBUG_LOG = true;
 	public static boolean DEBUG_LOG_LEVEL1 = false;
@@ -60,7 +76,8 @@ public class Main {
 	 */
 	public static void main(String[] args) {
 
-		String boundbox = "49.7422316,23.8623047,49.9529871,24.2056274";
+		Region region = Bounds_Kyiv;
+		String boundbox = region.toString();
 		String tags = "[\"route\"~\"trolleybus|tram|bus\"];>>;";
 		String meta = URLEncoder.encode("out meta;");
 
@@ -71,6 +88,7 @@ public class Main {
 		startTime = System.currentTimeMillis();
 
 		String temp_filename = "temp.osm";
+
 		// *
 		// try to download files
 		try {
