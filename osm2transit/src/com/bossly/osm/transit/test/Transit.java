@@ -6,7 +6,6 @@ import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -24,9 +23,23 @@ import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import com.bossly.osm.transit.*;
+import com.bossly.osm.transit.Region;
+import com.bossly.osm.transit.Route;
+import com.bossly.osm.transit.WebAPI;
 
-public class Main {
+public class Transit {
+
+	/*
+	 * Comments:
+	 * 
+	 * - Make a search by building address and number - Make route search
+	 * 
+	 * https://play.google.com/store/apps/details?id=com.luitech.remindit
+	 * https://github.com/mdavydov/UkrParser/
+	 */
+
+	public static void main(String[] args) {
+	}
 
 	// http://overpass-api.de/api/interpreter?
 	// data=relation(49.7422316,23.8623047,49.9529871,24.2056274)[route=trolleybus];out
@@ -35,61 +48,48 @@ public class Main {
 	// kyiv(50.61, 30.263, 50.281, 30.81) - yes
 	// ternopil (49.5924, 25.5228, 49.5085, 25.6594) - no trasit
 
-	static Region Bounds_Lviv = new Region(49.7422316, 23.8623047, 49.9529871,
+	public static Region Bounds_Lviv = new Region(49.7422316, 23.8623047, 49.9529871,
 			24.2056274);
-	
+
 	// big lviv - 49.67, 23.774, 50.004, 24.291
 
-	static Region Bounds_Kyiv = new Region(50.281, 30.263, 50.61, 30.81);
+	public static Region Bounds_Kyiv = new Region(50.281, 30.263, 50.61, 30.81);
 
 	public static boolean DEBUG_LOG = true;
 	public static boolean DEBUG_LOG_LEVEL1 = false;
 
-	public static float per_total = 0;
-	public static float per_item = 100;
+	ArrayList<Route> routes = null;
 
-	static long startTime;
-	static SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
+	public ArrayList<Route> findRoutes(String direction) {
 
-	private static String elapsedTime() {
-		long elapsedTime = System.currentTimeMillis() - startTime;
-		return dateFormat.format(new Date(elapsedTime));
+		// parse text input
+		int max_dist = 300; // meters
+
+		String[] coords = direction.split(",");
+
+		double lat = Double.parseDouble(coords[0].trim());
+		double lon = Double.parseDouble(coords[1].trim());
+		double lat2 = Double.parseDouble(coords[2].trim());
+		double lon2 = Double.parseDouble(coords[3].trim());
+
+		ArrayList<Route> f1 = GeoUtils.filterRoutes(routes, lat, lon, max_dist);
+		ArrayList<Route> f2 = GeoUtils.filterRoutes(f1, lat2, lon2, max_dist);
+
+		return f2;
 	}
 
-	public static void progress() {
-		int prev = (int) per_total;
+	/* Data processing */
 
-		per_total += per_item;
-
-		int now = (int) per_total;
-
-		if (now != prev) {
-			System.out.println("Progress[" + per_total + "] time: "
-					+ elapsedTime());
-		}
-	}
-
-	/**
-	 * Launch method.
-	 * 
-	 * @param args
-	 */
-	public static void main(String[] args) {
-
-		Region region = Bounds_Kyiv;
+	public String downloadOsmData(Region region) {
 		String boundbox = region.toString();
 		String tags = "[\"route\"~\"trolleybus|tram|bus\"];>>;";
 		String meta = URLEncoder.encode("out meta;");
+		String temp_filename = "temp.osm";
 
 		String link = String.format(
 				"http://overpass-api.de/api/interpreter?data=relation(%s)%s%s",
 				boundbox, tags, meta);
 
-		startTime = System.currentTimeMillis();
-
-		String temp_filename = "temp.osm";
-
-		// *
 		// try to download files
 		try {
 			URL urlLink = new URL(link);
@@ -112,45 +112,31 @@ public class Main {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		// */
-		args = new String[] { temp_filename };
+
+		return temp_filename;
+	}
+
+	public void openData(String temp_filename) {
 
 		WebAPI api = new WebAPI();
-		int count = args.length;
-		ArrayList<Route> routes = new ArrayList<Route>();
-		per_item = per_item / count;
+		routes = new ArrayList<Route>();
 
-		for (int i = 0; i < count; i++) {
+		File file = new File(temp_filename);
+		URL url = null;
 
-			File file = new File(args[i]);
-			URL url = null;
+		try {
+			url = file.toURI().toURL();
+		} catch (Exception e) {
+		}
 
-			try {
-				url = file.toURI().toURL();
-			} catch (Exception e) {
-			}
-
-			// get newest routes info
-			if (url != null) {
-				ArrayList<Route> rts = api.parseTransitInfoByUrl(url);
-				routes.addAll(rts);
-			}
-
-			progress();
-
-			// if (DEBUG_LOG)
-			// System.out.println("parsed: " + file.getAbsolutePath());
+		// get newest routes info
+		if (url != null) {
+			ArrayList<Route> rts = api.parseTransitInfoByUrl(url);
+			routes.addAll(rts);
 		}
 
 		// get newest routes info
 		System.out.println("Routes loaded: " + routes.size());
-
-		// save to formatted file
-		try {
-			saveToFile(routes, "route.xml");
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
 	}
 
 	private static void saveToFile(ArrayList<Route> routes, String filepath)
@@ -197,23 +183,14 @@ public class Main {
 				rType.setTextContent(route.route);
 			routeElement.appendChild(rType);
 
-			// <start>6:05</start>
-			Element element = xmlDoc.createElement("start");
-			routeElement.appendChild(element);
-
-			// <end>23:19</end>
-			element = xmlDoc.createElement("end");
+			Element element = xmlDoc.createElement("stops");
+			element.setTextContent(route.genStops());
 			routeElement.appendChild(element);
 
 			// <path>49.83959212773939,23.994769489288274;</path>
 			// TODO: gen path with nodes
 			element = xmlDoc.createElement("path");
-			// element.setTextContent(route.genStops());
-			routeElement.appendChild(element);
-
-			// <modified>1331818240813</modified>
-			element = xmlDoc.createElement("modified");
-			element.setTextContent(today.getTime() + "");
+			// element.setTextContent(route.genPath());
 			routeElement.appendChild(element);
 
 			routesElement.appendChild(routeElement);

@@ -309,7 +309,8 @@ public class Route
 
 			Node node = WebAPI.nodes.get(stop);
 			builder.append(node.name);		
-			builder.append(String.format("%f,%f;", node.lat, node.lon));
+			builder.append(String.format("%f,%f", node.lat, node.lon));
+			builder.append(";");
 		}
 
 		return builder.toString();

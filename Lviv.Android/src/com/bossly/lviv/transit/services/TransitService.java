@@ -35,7 +35,7 @@ public class TransitService extends IntentService {
 	Region Bounds_Kyiv = new Region(50.281, 30.263, 50.61, 30.81);
 	Region Bounds_Kharkiv = new Region(49.9022, 36.1309, 50.0684, 36.3895);
 
-	Region currentRegion = Bounds_Kyiv;
+	Region currentRegion = Bounds_Lviv;
 
 	private final static String ROUTE_TAGS = "[\"route\"~\"trolleybus|tram|bus\"];>>;";
 	private final static String ROUTE_META = Uri.encode("out meta;");
