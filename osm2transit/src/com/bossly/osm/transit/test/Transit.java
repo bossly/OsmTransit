@@ -38,9 +38,6 @@ public class Transit {
 	 * https://github.com/mdavydov/UkrParser/
 	 */
 
-	public static void main(String[] args) {
-	}
-
 	// http://overpass-api.de/api/interpreter?
 	// data=relation(49.7422316,23.8623047,49.9529871,24.2056274)[route=trolleybus];out
 	// meta;
@@ -139,7 +136,7 @@ public class Transit {
 		System.out.println("Routes loaded: " + routes.size());
 	}
 
-	private static void saveToFile(ArrayList<Route> routes, String filepath)
+	public void saveToFile(String filepath)
 			throws ParserConfigurationException, TransformerException {
 
 		// create the xml document builder factory object
@@ -153,7 +150,6 @@ public class Transit {
 
 		// get the root element
 		Element routesElement = xmlDoc.getDocumentElement();
-		Date today = new Date();
 
 		for (Route route : routes) {
 

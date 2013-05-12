@@ -8,14 +8,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
-import java.util.concurrent.BrokenBarrierException;
-
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -23,9 +20,13 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.UIManager;
-import javax.xml.stream.Location;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerException;
 
 import com.bossly.osm.transit.Route;
+import javax.swing.GroupLayout;
+import javax.swing.GroupLayout.Alignment;
+import javax.swing.LayoutStyle.ComponentPlacement;
 
 public class Application {
 
@@ -84,7 +85,6 @@ public class Application {
 				filename = transit.downloadOsmData(Transit.Bounds_Lviv);
 			}
 		});
-		panel.add(btnDownload);
 
 		JButton btnLoadFromFile = new JButton("Load from file");
 		btnLoadFromFile.addActionListener(new ActionListener() {
@@ -92,7 +92,43 @@ public class Application {
 				transit.openData(filename);
 			}
 		});
-		panel.add(btnLoadFromFile);
+		
+		JButton btnSavefile = new JButton("Save2File");
+		btnSavefile.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				try {
+					transit.saveToFile("route.xml");
+				} catch (ParserConfigurationException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (TransformerException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		});
+		GroupLayout gl_panel = new GroupLayout(panel);
+		gl_panel.setHorizontalGroup(
+			gl_panel.createParallelGroup(Alignment.LEADING)
+				.addGroup(gl_panel.createSequentialGroup()
+					.addContainerGap()
+					.addComponent(btnDownload)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(btnLoadFromFile)
+					.addGap(18)
+					.addComponent(btnSavefile)
+					.addGap(64))
+		);
+		gl_panel.setVerticalGroup(
+			gl_panel.createParallelGroup(Alignment.LEADING)
+				.addGroup(gl_panel.createSequentialGroup()
+					.addGap(5)
+					.addGroup(gl_panel.createParallelGroup(Alignment.BASELINE)
+						.addComponent(btnDownload)
+						.addComponent(btnLoadFromFile)
+						.addComponent(btnSavefile)))
+		);
+		panel.setLayout(gl_panel);
 
 		JPanel panel_1 = new JPanel();
 		frame.getContentPane().add(panel_1, BorderLayout.SOUTH);
