@@ -308,9 +308,9 @@ public class Route
 		{
 
 			Node node = WebAPI.nodes.get(stop);
-			builder.append(node.name);		
+			//builder.append(node.name);		
+			//builder.append(";");
 			builder.append(String.format("%f,%f", node.lat, node.lon));
-			builder.append(";");
 		}
 
 		return builder.toString();
@@ -344,5 +344,10 @@ public class Route
 		}
 
 		return contain;
+	}
+
+	@Override
+	public String toString() {
+		return getName();
 	}
 }

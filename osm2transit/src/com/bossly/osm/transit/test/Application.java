@@ -1,38 +1,45 @@
 package com.bossly.osm.transit.test;
 
 import java.awt.BorderLayout;
-import java.awt.Desktop;
 import java.awt.EventQueue;
-import java.awt.FlowLayout;
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.net.URLEncoder;
+import java.io.File;
 import java.util.ArrayList;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-import javax.swing.UIManager;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.TransformerException;
 
-import com.bossly.osm.transit.Route;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.LayoutStyle.ComponentPlacement;
+import javax.swing.UIManager;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+
+import org.openstreetmap.gui.jmapviewer.Coordinate;
+import org.openstreetmap.gui.jmapviewer.JMapViewer;
+import org.openstreetmap.gui.jmapviewer.JMapViewer.ZOOM_BUTTON_STYLE;
+
+import com.bossly.osm.transit.Route;
 
 public class Application {
 
-	private JFrame frame;
-	private JTextField textField;
-	private JTextField textField_1;
+	/* views */
+	private JFrame frameView;
+	private JList listView;
+	private JMapViewer mapView;
+
+	/* variables */
+	private String filename = "temp.osm";
+	private Transit transit = new Transit();
+	private Coordinate startPoint = null;
+	private Coordinate endPoint = null;
 
 	/**
 	 * Launch the application.
@@ -42,7 +49,7 @@ public class Application {
 			public void run() {
 				try {
 					Application window = new Application();
-					window.frame.setVisible(true);
+					window.frameView.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -63,208 +70,243 @@ public class Application {
 		initialize();
 	}
 
-	Transit transit = new Transit();
-	String filename = "temp.osm";
-	JList listResult;
-	ArrayList<Route> result;
-
 	/**
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize() {
-		frame = new JFrame();
-		frame.setBounds(100, 100, 450, 300);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+		frameView = new JFrame();
+		frameView.setBounds(100, 100, 661, 514);
+		frameView.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		JPanel panel = new JPanel();
-		frame.getContentPane().add(panel, BorderLayout.NORTH);
+		frameView.getContentPane().add(panel, BorderLayout.NORTH);
 
 		JButton btnDownload = new JButton("Download");
 		btnDownload.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				filename = transit.downloadOsmData(Transit.Bounds_Lviv);
+				downloadData();
 			}
 		});
 
 		JButton btnLoadFromFile = new JButton("Load from file");
 		btnLoadFromFile.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				transit.openData(filename);
-			}
-		});
-		
-		JButton btnSavefile = new JButton("Save2File");
-		btnSavefile.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				try {
-					transit.saveToFile("route.xml");
-				} catch (ParserConfigurationException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (TransformerException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+
+				File file = new File(filename);
+
+				if (!file.exists()) {
+					downloadData();
+				} else {
+					transit.openData(filename);
+					reloadList();
 				}
 			}
 		});
+
 		GroupLayout gl_panel = new GroupLayout(panel);
-		gl_panel.setHorizontalGroup(
-			gl_panel.createParallelGroup(Alignment.LEADING)
-				.addGroup(gl_panel.createSequentialGroup()
-					.addContainerGap()
-					.addComponent(btnDownload)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(btnLoadFromFile)
-					.addGap(18)
-					.addComponent(btnSavefile)
-					.addGap(64))
-		);
-		gl_panel.setVerticalGroup(
-			gl_panel.createParallelGroup(Alignment.LEADING)
-				.addGroup(gl_panel.createSequentialGroup()
-					.addGap(5)
-					.addGroup(gl_panel.createParallelGroup(Alignment.BASELINE)
+		gl_panel.setHorizontalGroup(gl_panel.createParallelGroup(
+				Alignment.LEADING).addGroup(
+				gl_panel.createSequentialGroup().addContainerGap()
 						.addComponent(btnDownload)
-						.addComponent(btnLoadFromFile)
-						.addComponent(btnSavefile)))
-		);
+						.addPreferredGap(ComponentPlacement.RELATED)
+						.addComponent(btnLoadFromFile).addGap(184)));
+		gl_panel.setVerticalGroup(gl_panel
+				.createParallelGroup(Alignment.LEADING)
+				.addGroup(
+						gl_panel.createSequentialGroup()
+								.addGap(5)
+								.addGroup(
+										gl_panel.createParallelGroup(
+												Alignment.BASELINE)
+												.addComponent(btnDownload)
+												.addComponent(btnLoadFromFile))));
 		panel.setLayout(gl_panel);
 
-		JPanel panel_1 = new JPanel();
-		frame.getContentPane().add(panel_1, BorderLayout.SOUTH);
-		panel_1.setLayout(new FlowLayout(FlowLayout.LEFT, 1, 1));
+		JPanel panel_2 = new JPanel();
+		frameView.getContentPane().add(panel_2, BorderLayout.CENTER);
 
-		JLabel lblFrom = new JLabel("From");
-		panel_1.add(lblFrom);
+		JList list_1 = new JList();
+		list_1.setValueIsAdjusting(true);
 
-		textField = new JTextField();
-		panel_1.add(textField);
-		textField.setColumns(10);
+		list_1.addListSelectionListener(new ListSelectionListener() {
 
-		JLabel lblNewLabel = new JLabel("To");
-		panel_1.add(lblNewLabel);
+			@Override
+			public void valueChanged(ListSelectionEvent evt) {
 
-		textField_1 = new JTextField();
-		panel_1.add(textField_1);
-		textField_1.setColumns(10);
+				JList list = (JList) evt.getSource();
+				Route route = (Route) list.getSelectedValue();
 
-		JButton btnFind = new JButton("Find");
-		btnFind.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				String from = textField.getText();
-				String to = textField_1.getText();
-				
-				ArrayList<Route> routes = transit.findRoutes(from + "," + to);
-				result = routes;
-
-				// add to list view
-
-				// TODO add your handling code here:
-				javax.swing.DefaultListModel listModel = new javax.swing.DefaultListModel();
-
-				for (int i = 0; i < routes.size(); i++) {
-					Route r = routes.get(i);
-					listModel.addElement(r.name);
-				}
-
-				listResult.setModel(listModel);
+				showRouteOnMap(route);
 			}
 		});
-		panel_1.add(btnFind);
 
-		JList list = new JList();
-		list.addMouseListener(new MouseListener() {
+		listView = list_1;
+
+		JScrollPane scroll = new JScrollPane(list_1);
+
+		mapView = new JMapViewer();
+		mapView.setMapMarkerVisible(true);
+		mapView.setZoomButtonStyle(ZOOM_BUTTON_STYLE.HORIZONTAL);
+		mapView.setScrollWrapEnabled(true);
+
+		GroupLayout gl_panel_2 = new GroupLayout(panel_2);
+		gl_panel_2.setHorizontalGroup(gl_panel_2.createParallelGroup(
+				Alignment.LEADING).addGroup(
+				gl_panel_2
+						.createSequentialGroup()
+						.addContainerGap()
+						.addComponent(scroll, GroupLayout.PREFERRED_SIZE, 232,
+								GroupLayout.PREFERRED_SIZE)
+						.addPreferredGap(ComponentPlacement.RELATED)
+						.addComponent(mapView, GroupLayout.DEFAULT_SIZE, 411,
+								Short.MAX_VALUE).addContainerGap()));
+		gl_panel_2
+				.setVerticalGroup(gl_panel_2
+						.createParallelGroup(Alignment.LEADING)
+						.addGroup(
+								gl_panel_2
+										.createSequentialGroup()
+										.addGroup(
+												gl_panel_2
+														.createParallelGroup(
+																Alignment.LEADING)
+														.addComponent(
+																mapView,
+																GroupLayout.DEFAULT_SIZE,
+																421,
+																Short.MAX_VALUE)
+														.addGroup(
+																gl_panel_2
+																		.createSequentialGroup()
+																		.addGap(6)
+																		.addComponent(
+																				scroll,
+																				GroupLayout.DEFAULT_SIZE,
+																				415,
+																				Short.MAX_VALUE)))
+										.addContainerGap()));
+		panel_2.setLayout(gl_panel_2);
+
+		mapView.addMouseListener(new MouseListener() {
 
 			@Override
 			public void mouseReleased(MouseEvent arg0) {
-				// TODO Auto-generated method stub
-
 			}
 
 			@Override
 			public void mousePressed(MouseEvent arg0) {
-				// TODO Auto-generated method stub
-
 			}
 
 			@Override
 			public void mouseExited(MouseEvent arg0) {
-				// TODO Auto-generated method stub
-
 			}
 
 			@Override
 			public void mouseEntered(MouseEvent arg0) {
-				// TODO Auto-generated method stub
-
 			}
 
-			public void mouseClicked(MouseEvent evt) {
-				JList list = (JList) evt.getSource();
-				if (evt.getClickCount() == 2) {
-					int index = list.locationToIndex(evt.getPoint());
-					
-					Route r = result.get(index);
-					showRoute(r);
-
-				} else if (evt.getClickCount() == 3) { // Triple-click
-					int index = list.locationToIndex(evt.getPoint());
-
-				}
+			@Override
+			public void mouseClicked(MouseEvent arg0) {
+				placeSearchPoint(arg0.getPoint());
 			}
 		});
-		
-		listResult = list;
-		frame.getContentPane().add(list, BorderLayout.CENTER);
 	}
-	
-	public void showRoute(Route route)
-	{
-		StringBuilder builder = new StringBuilder();
-		builder.append("http://maps.googleapis.com/maps/api/staticmap");
-		builder.append("?size=" + 400 + "x" + 500);
-		builder.append("&path=color:0x0000ff" +
-				URLEncoder.encode("|weight:5"));
-		String sway = route.genPath();
 
+	/* Helper methods */
+
+	private void placeSearchPoint(Point p) {
+
+		Coordinate coor = mapView.getPosition(p);
+
+		mapView.removeAllMapMarkers();
+		mapView.removeAllMapPolygons();
+
+		if (startPoint == null) {
+			startPoint = coor;
+
+			mapView.addMapMarker(new MapMarkerPoint(startPoint.getLat(),
+					startPoint.getLon()));
+
+		} else if (endPoint == null) {
+			endPoint = coor;
+
+			// find routes
+			ArrayList<Route> routes = transit.findRoutes(startPoint.getLat(),
+					startPoint.getLon(), endPoint.getLat(), endPoint.getLon());
+
+			// add to list view
+			javax.swing.DefaultListModel listModel = new javax.swing.DefaultListModel();
+
+			for (int i = 0; i < routes.size(); i++) {
+				Route r = routes.get(i);
+				listModel.addElement(r);
+			}
+
+			listView.setModel(listModel);
+
+			mapView.addMapMarker(new MapMarkerPoint(startPoint.getLat(),
+					startPoint.getLon()));
+			mapView.addMapMarker(new MapMarkerPoint(endPoint.getLat(), endPoint
+					.getLon()));
+
+		} else {
+			startPoint = null;
+			endPoint = null;
+
+			reloadList();
+		}
+	}
+
+	private void downloadData() {
+		filename = transit.downloadOsmData(Transit.Bounds_Lviv);
+
+		transit.openData(filename);
+		reloadList();
+	}
+
+	private void showRouteOnMap(Route route) {
+
+		mapView.removeAllMapPolygons();
+		mapView.removeAllMapMarkers();
+
+		// show on map
+		MapRoute polygon = new MapRoute(route);
+		mapView.addMapPolygon(polygon);
+
+		// stops
+		String sway = route.genStops();
 		String[] path = sway.substring(0, sway.length() - 1).split(";");
 
 		for (int j = 0; j < path.length; j++) {
+
 			String[] coors = path[j].split(",");
 
 			double lat = Double.parseDouble(coors[0]);
 			double lon = Double.parseDouble(coors[1]);
 
-			builder.append(URLEncoder.encode("|" + lat + "," + lon));
+			mapView.addMapMarker(new MapMarkerPoint(lat, lon));
 		}
 
-		builder.append("&sensor=true");
-		
-		try {
-			openWebpage(new URI(builder.toString()));
-		} catch (URISyntaxException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		mapView.addMapMarker(new MapMarkerPoint(startPoint.getLat(), startPoint
+				.getLon()));
+		mapView.addMapMarker(new MapMarkerPoint(endPoint.getLat(), endPoint
+				.getLon()));
 	}
 
-	public static void openWebpage(URI uri) {
-		Desktop desktop = Desktop.isDesktopSupported() ? Desktop.getDesktop()
-				: null;
-		if (desktop != null && desktop.isSupported(Desktop.Action.BROWSE)) {
-			try {
-				desktop.browse(uri);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-	}
+	private void reloadList() {
 
-	public static void openWebpage(URL url) {
-		try {
-			openWebpage(url.toURI());
-		} catch (URISyntaxException e) {
-			e.printStackTrace();
+		// display all routes
+		ArrayList<Route> routes = transit.getCopyOfRoutes();
+
+		// add to list view
+		javax.swing.DefaultListModel listModel = new javax.swing.DefaultListModel();
+
+		for (int i = 0; i < routes.size(); i++) {
+			Route r = routes.get(i);
+			listModel.addElement(r);
 		}
+
+		listView.setModel(listModel);
 	}
 }

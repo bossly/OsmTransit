@@ -26,6 +26,7 @@ import org.w3c.dom.Element;
 import com.bossly.osm.transit.Region;
 import com.bossly.osm.transit.Route;
 import com.bossly.osm.transit.WebAPI;
+import com.bossly.osm.transit.engine.GeoUtils;
 
 public class Transit {
 
@@ -45,8 +46,8 @@ public class Transit {
 	// kyiv(50.61, 30.263, 50.281, 30.81) - yes
 	// ternopil (49.5924, 25.5228, 49.5085, 25.6594) - no trasit
 
-	public static Region Bounds_Lviv = new Region(49.7422316, 23.8623047, 49.9529871,
-			24.2056274);
+	public static Region Bounds_Lviv = new Region(49.7422316, 23.8623047,
+			49.9529871, 24.2056274);
 
 	// big lviv - 49.67, 23.774, 50.004, 24.291
 
@@ -57,17 +58,27 @@ public class Transit {
 
 	ArrayList<Route> routes = null;
 
+	public ArrayList<Route> getCopyOfRoutes() {
+		return new ArrayList<Route>(routes);
+	}
+
 	public ArrayList<Route> findRoutes(String direction) {
 
 		// parse text input
-		int max_dist = 300; // meters
-
 		String[] coords = direction.split(",");
 
 		double lat = Double.parseDouble(coords[0].trim());
 		double lon = Double.parseDouble(coords[1].trim());
 		double lat2 = Double.parseDouble(coords[2].trim());
 		double lon2 = Double.parseDouble(coords[3].trim());
+
+		return findRoutes(lat, lon, lat2, lon2);
+	}
+
+	public ArrayList<Route> findRoutes(double lat, double lon, double lat2,
+			double lon2) {
+
+		int max_dist = 300; // meters
 
 		ArrayList<Route> f1 = GeoUtils.filterRoutes(routes, lat, lon, max_dist);
 		ArrayList<Route> f2 = GeoUtils.filterRoutes(f1, lat2, lon2, max_dist);
