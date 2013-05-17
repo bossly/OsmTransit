@@ -7,26 +7,12 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.util.ArrayList;
-import java.util.Date;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-
-import org.w3c.dom.DOMImplementation;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 
 import com.bossly.osm.transit.Region;
-import com.bossly.osm.transit.Route;
+import com.bossly.osm.transit.WayRoute;
 import com.bossly.osm.transit.WebAPI;
 import com.bossly.osm.transit.engine.GeoUtils;
+import com.bossly.osm.transit.engine.Route;
 
 public class Transit {
 
@@ -60,19 +46,6 @@ public class Transit {
 
 	public ArrayList<Route> getCopyOfRoutes() {
 		return new ArrayList<Route>(routes);
-	}
-
-	public ArrayList<Route> findRoutes(String direction) {
-
-		// parse text input
-		String[] coords = direction.split(",");
-
-		double lat = Double.parseDouble(coords[0].trim());
-		double lon = Double.parseDouble(coords[1].trim());
-		double lat2 = Double.parseDouble(coords[2].trim());
-		double lon2 = Double.parseDouble(coords[3].trim());
-
-		return findRoutes(lat, lon, lat2, lon2);
 	}
 
 	public ArrayList<Route> findRoutes(double lat, double lon, double lat2,
@@ -139,83 +112,23 @@ public class Transit {
 
 		// get newest routes info
 		if (url != null) {
-			ArrayList<Route> rts = api.parseTransitInfoByUrl(url);
-			routes.addAll(rts);
+			ArrayList<WayRoute> rts = api.parseTransitInfoByUrl(url);
+
+			for (WayRoute wayRoute : rts) {
+
+				Route route = new Route();
+				route.id = wayRoute.id;
+				route.name = wayRoute.getName();
+				route.desc = wayRoute.genDescription();
+				route.path = wayRoute.genPath();
+				route.type = wayRoute.route;
+
+				routes.add(route);
+			}
 		}
 
 		// get newest routes info
 		System.out.println("Routes loaded: " + routes.size());
-	}
-
-	public void saveToFile(String filepath)
-			throws ParserConfigurationException, TransformerException {
-
-		// create the xml document builder factory object
-		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-		DocumentBuilder builder = factory.newDocumentBuilder();
-		DOMImplementation domImpl = builder.getDOMImplementation();
-
-		// create a document with the default namespace
-		// and a root node
-		Document xmlDoc = domImpl.createDocument(null, "routes", null);
-
-		// get the root element
-		Element routesElement = xmlDoc.getDocumentElement();
-
-		for (Route route : routes) {
-
-			if (route == null || route.name == null)
-				continue;
-
-			Element routeElement = xmlDoc.createElement("route");
-
-			// id
-			Element rId = xmlDoc.createElement("id");
-			rId.setTextContent("" + route.id);
-			routeElement.appendChild(rId);
-
-			// name
-			Element rName = xmlDoc.createElement("name");
-			rName.setTextContent(route.name);
-			routeElement.appendChild(rName);
-
-			// desc
-			Element rDesc = xmlDoc.createElement("desc");
-			rDesc.setTextContent(route.genDescription());
-			routeElement.appendChild(rDesc);
-
-			// type
-			Element rType = xmlDoc.createElement("type");
-			if (route.route != null)
-				rType.setTextContent(route.route);
-			routeElement.appendChild(rType);
-
-			Element element = xmlDoc.createElement("stops");
-			element.setTextContent(route.genStops());
-			routeElement.appendChild(element);
-
-			// <path>49.83959212773939,23.994769489288274;</path>
-			// TODO: gen path with nodes
-			element = xmlDoc.createElement("path");
-			// element.setTextContent(route.genPath());
-			routeElement.appendChild(element);
-
-			routesElement.appendChild(routeElement);
-		}
-
-		// save to file
-		DOMSource source = new DOMSource(xmlDoc);
-		StreamResult result = new StreamResult(filepath);
-
-		TransformerFactory transformerFactory = TransformerFactory
-				.newInstance();
-
-		Transformer transformer = transformerFactory.newTransformer();
-		transformer.setOutputProperty(OutputKeys.METHOD, "xml");
-		transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-		transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
-
-		transformer.transform(source, result);
 	}
 
 }

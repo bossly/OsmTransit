@@ -9,8 +9,8 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
-import com.bossly.lviv.transit.Route;
 import com.bossly.lviv.transit.data.RoutesDataProvider.DatabaseHelper;
+import com.bossly.osm.transit.engine.Route;
 
 public class DatabaseSource
 {

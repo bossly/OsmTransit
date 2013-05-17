@@ -6,11 +6,11 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLEncoder;
 
-import com.bossly.osm.transit.Route;
+import com.bossly.osm.transit.WayRoute;
 
 public class UITools {
 
-	public static void showRouteOnGoogleMaps(Route route) {
+	public static void showRouteOnGoogleMaps(WayRoute route) {
 
 		StringBuilder builder = new StringBuilder();
 		builder.append("http://maps.googleapis.com/maps/api/staticmap");

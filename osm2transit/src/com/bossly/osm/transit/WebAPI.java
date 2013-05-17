@@ -16,13 +16,13 @@ public class WebAPI extends DefaultHandler {
 	public static HashMap<Long, Node> nodes = null;
 	public static HashMap<Long, Way> ways = null;
 
-	public ArrayList<Route> parseTransitInfoByUrl(URL url) {
+	public ArrayList<WayRoute> parseTransitInfoByUrl(URL url) {
 
 		nodes = new HashMap<Long, Node>();
 		ways = new HashMap<Long, Way>();
 
 		InputStream stream = null;
-		routes = new ArrayList<Route>();
+		routes = new ArrayList<WayRoute>();
 
 		try {
 			stream = url.openStream();
@@ -46,8 +46,8 @@ public class WebAPI extends DefaultHandler {
 	/* XML parser */
 
 	// helpers
-	ArrayList<Route> routes = null;
-	Route route = null;
+	ArrayList<WayRoute> routes = null;
+	WayRoute route = null;
 	Node node = null;
 	Way way = null;
 
@@ -64,7 +64,7 @@ public class WebAPI extends DefaultHandler {
 		} else if (route != null) {
 			route.parse(qName, attributes);
 		} else if (qName.equalsIgnoreCase("relation")) {
-			route = new Route();
+			route = new WayRoute();
 			route.parse(qName, attributes);
 		} else if (qName.equalsIgnoreCase("node")) {
 			node = new Node();

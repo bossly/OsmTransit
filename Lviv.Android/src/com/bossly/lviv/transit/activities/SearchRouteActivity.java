@@ -5,8 +5,8 @@ import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 
-import com.bossly.lviv.transit.GeoUtils;
 import com.bossly.lviv.transit.fragments.ResultRoutesFragment;
+import com.bossly.lviv.transit.utils.CommonUtils;
 
 public class SearchRouteActivity extends GeoLocationBaseActivity {
 	private ResultRoutesFragment fragment;
@@ -37,7 +37,7 @@ public class SearchRouteActivity extends GeoLocationBaseActivity {
 		String locationName = getIntent().getStringExtra(Intent.EXTRA_SUBJECT);
 
 		if (getIntent().getAction() == Intent.ACTION_VIEW) {
-			Location loc = GeoUtils.parseGeo(locationName);
+			Location loc = CommonUtils.parseGeo(locationName);
 			fragment.setDestination(loc);
 		}
 	}

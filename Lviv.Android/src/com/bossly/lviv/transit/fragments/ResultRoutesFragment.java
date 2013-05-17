@@ -12,11 +12,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.bossly.lviv.transit.GeoUtils;
 import com.bossly.lviv.transit.R;
-import com.bossly.lviv.transit.Route;
 import com.bossly.lviv.transit.RouteAdapter;
 import com.bossly.lviv.transit.data.DatabaseSource;
+import com.bossly.lviv.transit.utils.CommonUtils;
+import com.bossly.osm.transit.engine.GeoUtils;
+import com.bossly.osm.transit.engine.Route;
 
 public class ResultRoutesFragment extends ListFragment {
 
@@ -42,7 +43,8 @@ public class ResultRoutesFragment extends ListFragment {
 	public void onLocationUpdated(Location location) {
 
 		if (location != null
-				&& GeoUtils.isBetterLocation(location, m_location, TWO_MINUTES)) {
+				&& CommonUtils.isBetterLocation(location, m_location,
+						TWO_MINUTES)) {
 
 			m_location = location;
 

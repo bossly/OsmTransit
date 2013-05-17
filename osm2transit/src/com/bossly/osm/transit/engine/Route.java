@@ -1,4 +1,4 @@
-package com.bossly.lviv.transit;
+package com.bossly.osm.transit.engine;
 
 import java.io.Serializable;
 import java.util.regex.Matcher;

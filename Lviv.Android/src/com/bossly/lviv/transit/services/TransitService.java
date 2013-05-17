@@ -20,11 +20,11 @@ import android.widget.Toast;
 import com.bossly.lviv.transit.R;
 import com.bossly.lviv.transit.activities.RoutesActivity;
 import com.bossly.lviv.transit.data.DatabaseSource;
+import com.bossly.lviv.transit.data.RoutesContract;
 import com.bossly.osm.transit.Node;
 import com.bossly.osm.transit.Region;
-import com.bossly.osm.transit.Route;
+import com.bossly.osm.transit.WayRoute;
 import com.bossly.osm.transit.WebAPI;
-import com.bossly.lviv.transit.data.RoutesContract;
 
 public class TransitService extends IntentService {
 	private final static String URL_FORMAT = "http://overpass-api.de/api/interpreter?data=relation(%s)%s%s";
@@ -84,7 +84,7 @@ public class TransitService extends IntentService {
 
 		String link = String.format(URL_FORMAT, currentRegion.toString(),
 				ROUTE_TAGS, ROUTE_META);
-		ArrayList<Route> routes = null;
+		ArrayList<WayRoute> routes = null;
 
 		try {
 			routes = new WebAPI().parseTransitInfoByUrl(new URL(link));
@@ -93,6 +93,7 @@ public class TransitService extends IntentService {
 		}
 
 		if (routes != null) {
+			
 			// save to db
 			DatabaseSource db = new DatabaseSource(this);
 			db.open();
@@ -103,12 +104,13 @@ public class TransitService extends IntentService {
 
 			ContentValues pointValues = new ContentValues();
 
-			for (Route route : routes) {
+			for (WayRoute route : routes) {
 
 				// ignore routes out of city
 				if (route.insideCity(currentRegion.Top, currentRegion.Left,
-						currentRegion.Bottom, currentRegion.Right) && route.name != null) {
-					
+						currentRegion.Bottom, currentRegion.Right)
+						&& route.name != null) {
+
 					long routeId = db.insertRoute(route.id, route.getName(),
 							route.route, route.genDescription(),
 							route.genPath());

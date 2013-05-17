@@ -21,12 +21,12 @@ import android.widget.ListView;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 
-import com.bossly.lviv.transit.GeoUtils;
 import com.bossly.lviv.transit.R;
 import com.bossly.lviv.transit.RouteCursorAdapter;
 import com.bossly.lviv.transit.activities.GeoLocationBaseActivity;
 import com.bossly.lviv.transit.data.RoutesContract;
 import com.bossly.lviv.transit.data.RoutesContract.RouteData;
+import com.bossly.lviv.transit.utils.CommonUtils;
 
 public class NearRoutesFragment extends Fragment implements
 		LoaderCallbacks<Cursor>, OnItemClickListener,
@@ -131,7 +131,7 @@ public class NearRoutesFragment extends Fragment implements
 				return;
 			}
 
-			GeoUtils.displayMap(getActivity(), sway);
+			CommonUtils.displayMap(getActivity(), sway);
 		}
 
 		cursor.close();
@@ -151,7 +151,7 @@ public class NearRoutesFragment extends Fragment implements
 		}
 
 		if (location != null
-				&& GeoUtils.isBetterLocation(location, m_location, TWO_MINUTES)) {
+				&& CommonUtils.isBetterLocation(location, m_location, TWO_MINUTES)) {
 
 			success = true;
 

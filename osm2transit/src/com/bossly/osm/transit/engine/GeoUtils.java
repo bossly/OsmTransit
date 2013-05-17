@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import com.bossly.osm.transit.Route;
-
 public class GeoUtils {
 
 	static Random r = new Random();
@@ -18,7 +16,7 @@ public class GeoUtils {
 		if (data != null) {
 			for (Route route : data) {
 
-				String path = route.genPath();
+				String path = route.path;
 
 				// calc short way to route
 				if (path != null) {

@@ -7,7 +7,7 @@ import java.util.regex.Pattern;
 
 import org.xml.sax.Attributes;
 
-public class Route
+public class WayRoute
 {
 
 	public long id;

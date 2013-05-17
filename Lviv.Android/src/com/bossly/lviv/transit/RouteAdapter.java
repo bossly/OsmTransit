@@ -16,8 +16,9 @@ import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.TextView;
 
-import com.bossly.lviv.transit.GeoUtils.Point2D;
 import com.bossly.lviv.transit.utils.CommonUtils;
+import com.bossly.osm.transit.engine.Route;
+import com.bossly.osm.transit.engine.GeoUtils.Point2D;
 
 public class RouteAdapter extends BaseAdapter implements Filterable {
 	static class ViewHolder {

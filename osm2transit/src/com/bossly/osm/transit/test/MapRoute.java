@@ -9,7 +9,7 @@ import java.util.List;
 import org.openstreetmap.gui.jmapviewer.Coordinate;
 import org.openstreetmap.gui.jmapviewer.interfaces.MapPolygon;
 
-import com.bossly.osm.transit.Route;
+import com.bossly.osm.transit.engine.Route;
 
 public class MapRoute implements MapPolygon {
 	List<Coordinate> coords;
@@ -19,8 +19,8 @@ public class MapRoute implements MapPolygon {
 		// polyline
 		coords = new ArrayList<Coordinate>();
 
-		String sway = route.genPath();
-		String[] path = sway.substring(0, sway.length() - 1).split(";");
+		String sway = route.path;
+		String[] path = route.path.substring(0, sway.length() - 1).split(";");
 
 		for (int j = 0; j < path.length; j++) {
 

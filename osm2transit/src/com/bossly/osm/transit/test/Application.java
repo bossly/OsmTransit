@@ -26,7 +26,7 @@ import org.openstreetmap.gui.jmapviewer.Coordinate;
 import org.openstreetmap.gui.jmapviewer.JMapViewer;
 import org.openstreetmap.gui.jmapviewer.JMapViewer.ZOOM_BUTTON_STYLE;
 
-import com.bossly.osm.transit.Route;
+import com.bossly.osm.transit.engine.Route;
 
 public class Application {
 
@@ -274,19 +274,19 @@ public class Application {
 		MapRoute polygon = new MapRoute(route);
 		mapView.addMapPolygon(polygon);
 
-		// stops
-		String sway = route.genStops();
-		String[] path = sway.substring(0, sway.length() - 1).split(";");
-
-		for (int j = 0; j < path.length; j++) {
-
-			String[] coors = path[j].split(",");
-
-			double lat = Double.parseDouble(coors[0]);
-			double lon = Double.parseDouble(coors[1]);
-
-			mapView.addMapMarker(new MapMarkerPoint(lat, lon));
-		}
+//		// stops
+//		String sway = route.stops;
+//		String[] path = sway.substring(0, sway.length() - 1).split(";");
+//
+//		for (int j = 0; j < path.length; j++) {
+//
+//			String[] coors = path[j].split(",");
+//
+//			double lat = Double.parseDouble(coors[0]);
+//			double lon = Double.parseDouble(coors[1]);
+//
+//			mapView.addMapMarker(new MapMarkerPoint(lat, lon));
+//		}
 
 		mapView.addMapMarker(new MapMarkerPoint(startPoint.getLat(), startPoint
 				.getLon()));

@@ -8,6 +8,7 @@ import android.content.Context;
 import android.support.v4.content.AsyncTaskLoader;
 
 import com.bossly.lviv.transit.data.DatabaseSource;
+import com.bossly.osm.transit.engine.Route;
 
 public class RoutesLoader extends AsyncTaskLoader<List<Route>>
 {
