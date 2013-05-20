@@ -31,6 +31,7 @@ public class Transit {
 	// lviv(49.7422316,23.8623047,49.9529871,24.2056274) - yes
 	// kyiv(50.61, 30.263, 50.281, 30.81) - yes
 	// ternopil (49.5924, 25.5228, 49.5085, 25.6594) - no trasit
+	// graph - http://www.overpass-api.de/api/sketch-route?2169221
 
 	public static Region Bounds_Lviv = new Region(49.7422316, 23.8623047,
 			49.9529871, 24.2056274);
@@ -64,6 +65,7 @@ public class Transit {
 	public String downloadOsmData(Region region) {
 		String boundbox = region.toString();
 		String tags = "[\"route\"~\"trolleybus|tram|bus\"];>>;";
+//		String tags = "[type~\"route_master\"];>>;";
 		String meta = URLEncoder.encode("out meta;");
 		String temp_filename = "temp.osm";
 

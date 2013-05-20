@@ -137,6 +137,8 @@ public class Application {
 				JList list = (JList) evt.getSource();
 				Route route = (Route) list.getSelectedValue();
 
+				System.out.println("Route id: " + route.id);
+				
 				showRouteOnMap(route);
 			}
 		});
@@ -211,6 +213,9 @@ public class Application {
 				placeSearchPoint(arg0.getPoint());
 			}
 		});
+
+		mapView.setZoom(11);
+		mapView.setCenter(new Point(297155,178167));
 	}
 
 	/* Helper methods */
@@ -288,10 +293,15 @@ public class Application {
 //			mapView.addMapMarker(new MapMarkerPoint(lat, lon));
 //		}
 
-		mapView.addMapMarker(new MapMarkerPoint(startPoint.getLat(), startPoint
+		if(startPoint != null) {
+			mapView.addMapMarker(new MapMarkerPoint(startPoint.getLat(), startPoint
 				.getLon()));
-		mapView.addMapMarker(new MapMarkerPoint(endPoint.getLat(), endPoint
+		}
+		
+		if(endPoint != null) {
+			mapView.addMapMarker(new MapMarkerPoint(endPoint.getLat(), endPoint
 				.getLon()));
+		}
 	}
 
 	private void reloadList() {

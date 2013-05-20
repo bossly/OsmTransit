@@ -1,5 +1,6 @@
 package com.bossly.osm.transit.test;
 
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.Polygon;
@@ -51,7 +52,19 @@ public class MapRoute implements MapPolygon {
 			pointsy[i] = point.y;
 		}
 
+		g.setColor(Color.black);
 		g.drawPolyline(pointsx, pointsy, count);
+		
+		if(count > 1) {
+			
+			int radius = 8;
+			// draw first 
+			g.setColor(Color.red);
+			g.fillOval( pointsx[0] - radius / 2, pointsy[0] - radius / 2, radius, radius);
+			// draw end 
+			g.setColor(Color.blue);
+			g.fillOval( pointsx[count - 1] - radius / 2, pointsy[count - 1] - radius / 2, radius, radius);
+		}
 	}
 
 	@Override
