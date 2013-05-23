@@ -9,7 +9,9 @@ Navigation:
  2. zoom with mouse wheel and right-mouse button to move map to Ukraine->L'viv city
  3. select any routes from left list to look polyline on map
  4. press left-mouse button to pin 'start' and 'finish' position. When you place second point, routing will search automatically. Press again left-mouse button to cancel searching result.
- 
+
+<a href="https://github.com/bossly/OsmTransit/blob/master/Nightly%20Builds/OsmTransit_desktop.jar?raw=true">[Download Nightly Build]</a>
+
  <img src="https://raw.github.com/bossly/OsmTransit/master/Documents/screenshots/screen1.png">preview</img>
 
 <h2>Android version</h2>
