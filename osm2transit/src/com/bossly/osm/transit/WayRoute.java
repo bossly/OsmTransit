@@ -61,7 +61,7 @@ public class WayRoute
 						String str_role = attributes.getValue(irole);
 
 						if (str_role != null && str_role.length() > 0)
-							skip = true;
+							skip = true; // ignore platform
 					}
 
 					if (!skip)
@@ -109,6 +109,9 @@ public class WayRoute
 
 	public String getName()
 	{
+		if( name == null )
+			name = "unknown";
+			
 		Matcher matcher = NAME_PATTERN.matcher(name);
 
 		if (matcher.find())

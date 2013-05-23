@@ -33,12 +33,10 @@ public class Transit {
 	// ternopil (49.5924, 25.5228, 49.5085, 25.6594) - no trasit
 	// graph - http://www.overpass-api.de/api/sketch-route?2169221
 
-	public static Region Bounds_Lviv = new Region(49.7422316, 23.8623047,
+	public static Region Bounds_Lviv = new Region("Львів", 49.7422316, 23.8623047,
 			49.9529871, 24.2056274);
 
 	// big lviv - 49.67, 23.774, 50.004, 24.291
-
-	public static Region Bounds_Kyiv = new Region(50.281, 30.263, 50.61, 30.81);
 
 	public static boolean DEBUG_LOG = true;
 	public static boolean DEBUG_LOG_LEVEL1 = false;
@@ -63,7 +61,7 @@ public class Transit {
 	/* Data processing */
 
 	public String downloadOsmData(Region region) {
-		String boundbox = region.toString();
+		String boundbox = region.bounds();
 		String tags = "[\"route\"~\"trolleybus|tram|bus\"];>>;";
 //		String tags = "[type~\"route_master\"];>>;";
 		String meta = URLEncoder.encode("out meta;");

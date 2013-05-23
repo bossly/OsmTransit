@@ -25,8 +25,11 @@ import javax.swing.event.ListSelectionListener;
 import org.openstreetmap.gui.jmapviewer.Coordinate;
 import org.openstreetmap.gui.jmapviewer.JMapViewer;
 import org.openstreetmap.gui.jmapviewer.JMapViewer.ZOOM_BUTTON_STYLE;
+import org.openstreetmap.gui.jmapviewer.OsmMercator;
 
+import com.bossly.osm.transit.Region;
 import com.bossly.osm.transit.engine.Route;
+import javax.swing.JComboBox;
 
 public class Application {
 
@@ -34,6 +37,7 @@ public class Application {
 	private JFrame frameView;
 	private JList listView;
 	private JMapViewer mapView;
+	private JComboBox cityComboView;
 
 	/* variables */
 	private String filename = "temp.osm";
@@ -85,6 +89,7 @@ public class Application {
 		JButton btnDownload = new JButton("Download");
 		btnDownload.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
+				
 				downloadData();
 			}
 		});
@@ -104,23 +109,46 @@ public class Application {
 			}
 		});
 
+		// bottom,left,top,right
+		Region lviv = new Region("Львів", 49.7422316, 23.8623047, 49.9529871, 24.2056274);
+		Region kyiv = new Region("Київ", 50.281, 30.263, 50.61, 30.81);
+		Region chernivci = new Region("Чернівці", 48.2466, 25.8731, 48.3281, 26.0144);
+		
+		Region[] cities = { lviv, kyiv, chernivci };
+		JComboBox comboBox = new JComboBox(cities);
+		cityComboView = comboBox;
+		cityComboView.setSelectedIndex(0);
+		cityComboView.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// scroll to city
+				Region r = (Region)cityComboView.getSelectedItem();
+				centerMapToRegion(r);
+			}
+		});
+		
 		GroupLayout gl_panel = new GroupLayout(panel);
-		gl_panel.setHorizontalGroup(gl_panel.createParallelGroup(
-				Alignment.LEADING).addGroup(
-				gl_panel.createSequentialGroup().addContainerGap()
+		gl_panel.setHorizontalGroup(
+			gl_panel.createParallelGroup(Alignment.LEADING)
+				.addGroup(gl_panel.createSequentialGroup()
+					.addContainerGap()
+					.addComponent(comboBox, GroupLayout.PREFERRED_SIZE, 229, GroupLayout.PREFERRED_SIZE)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(btnDownload)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(btnLoadFromFile)
+					.addGap(175))
+		);
+		gl_panel.setVerticalGroup(
+			gl_panel.createParallelGroup(Alignment.LEADING)
+				.addGroup(gl_panel.createSequentialGroup()
+					.addGap(5)
+					.addGroup(gl_panel.createParallelGroup(Alignment.BASELINE)
+						.addComponent(comboBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 						.addComponent(btnDownload)
-						.addPreferredGap(ComponentPlacement.RELATED)
-						.addComponent(btnLoadFromFile).addGap(184)));
-		gl_panel.setVerticalGroup(gl_panel
-				.createParallelGroup(Alignment.LEADING)
-				.addGroup(
-						gl_panel.createSequentialGroup()
-								.addGap(5)
-								.addGroup(
-										gl_panel.createParallelGroup(
-												Alignment.BASELINE)
-												.addComponent(btnDownload)
-												.addComponent(btnLoadFromFile))));
+						.addComponent(btnLoadFromFile)))
+		);
 		panel.setLayout(gl_panel);
 
 		JPanel panel_2 = new JPanel();
@@ -137,7 +165,7 @@ public class Application {
 				JList list = (JList) evt.getSource();
 				Route route = (Route) list.getSelectedValue();
 
-				System.out.println("Route id: " + route.id);
+				frameView.setTitle("Route id: " + route.id);
 				
 				showRouteOnMap(route);
 			}
@@ -214,8 +242,16 @@ public class Application {
 			}
 		});
 
-		mapView.setZoom(11);
-		mapView.setCenter(new Point(297155,178167));
+		centerMapToRegion(lviv);
+	}
+	
+	private void centerMapToRegion(Region region)
+	{
+		int zoom = 11;
+		double lon = region.Left + (region.Right - region.Left)/2;
+		double lat = region.Top + (region.Bottom - region.Top)/2;
+
+		mapView.setDisplayPositionByLatLon(lat, lon, zoom);
 	}
 
 	/* Helper methods */
@@ -264,7 +300,9 @@ public class Application {
 	}
 
 	private void downloadData() {
-		filename = transit.downloadOsmData(Transit.Bounds_Lviv);
+		
+		Region region = (Region)cityComboView.getSelectedItem();
+		filename = transit.downloadOsmData(region);
 
 		transit.openData(filename);
 		reloadList();
