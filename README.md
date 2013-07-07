@@ -27,4 +27,5 @@ Requier: Android version 2.2 and higher
 <ul>
 <li>Web: <a href="https://sites.google.com/site/baddroidlabs/home/transport-lvova">https://sites.google.com/site/baddroidlabs/home/transport-lvova</a></li>
 <li>Routes source: <a href="http://osm.org">osm.org</a></li>
+<li>Ukraine osm forum: <a href="http://forum.openstreetmap.org/viewforum.php?id=40">forum</a></li>
 </ul>
