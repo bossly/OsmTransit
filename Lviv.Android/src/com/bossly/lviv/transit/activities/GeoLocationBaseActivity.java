@@ -8,11 +8,11 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 
-import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.bossly.lviv.transit.R;
 
-public abstract class GeoLocationBaseActivity extends SherlockFragmentActivity
+public abstract class GeoLocationBaseActivity extends ActionBarActivity
 		implements LocationListener {
 
 	private LocationManager m_manager;
@@ -22,7 +22,7 @@ public abstract class GeoLocationBaseActivity extends SherlockFragmentActivity
 
 		super.onCreate(savedInstanceState);
 
-		setTheme(R.style.Theme_Sherlock_Light_DarkActionBar);
+		setTheme(R.style.Theme_AppCompat_Light_DarkActionBar);
 		m_manager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 	}
 

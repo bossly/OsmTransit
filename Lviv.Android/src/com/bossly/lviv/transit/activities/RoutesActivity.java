@@ -11,16 +11,17 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.SearchViewCompat;
 import android.support.v4.widget.SearchViewCompat.OnQueryTextListenerCompat;
+import android.support.v7.app.ActionBarActivity;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuInflater;
-import com.actionbarsherlock.view.MenuItem;
 import com.bossly.lviv.transit.R;
 import com.bossly.lviv.transit.fragments.NearRoutesFragment;
 import com.bossly.lviv.transit.services.TransitService;
 
-public class RoutesActivity extends GeoLocationBaseActivity {
+public class RoutesActivity extends ActionBarActivity {
 
 	private NearRoutesFragment nearFragment;
 
@@ -32,6 +33,7 @@ public class RoutesActivity extends GeoLocationBaseActivity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+		
 		super.onCreate(savedInstanceState);
 
 		final FragmentManager fragmentManager = getSupportFragmentManager();
@@ -58,7 +60,7 @@ public class RoutesActivity extends GeoLocationBaseActivity {
 	protected void onDestroy() {
 		super.onDestroy();
 
-		stopDetermineUserLocation();
+		//stopDetermineUserLocation();
 
 		LocalBroadcastManager.getInstance(this).unregisterReceiver(
 				mServiceReceiver);
@@ -67,7 +69,7 @@ public class RoutesActivity extends GeoLocationBaseActivity {
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 
-		MenuInflater inflater = getSupportMenuInflater();
+		MenuInflater inflater = getMenuInflater();
 
 		// collapse search
 		Context context = getSupportActionBar().getThemedContext();
@@ -115,16 +117,15 @@ public class RoutesActivity extends GeoLocationBaseActivity {
 			break;
 		}
 
-		// TODO Auto-generated method stub
 		return super.onOptionsItemSelected(item);
 	}
 
-	@Override
-	protected void onLocationUpdated(Location location) {
-
-		if (nearFragment != null) {
-			nearFragment.onLocationUpdated(location);
-		}
-	}
+//	@Override
+//	protected void onLocationUpdated(Location location) {
+//
+//		if (nearFragment != null) {
+//			nearFragment.onLocationUpdated(location);
+//		}
+//	}
 
 }

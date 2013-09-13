@@ -2,8 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.bossly.lviv.transit"
     android:installLocation="auto"
-    android:versionCode="24"
-    android:versionName="1.6.0" >
+    android:versionCode="25"
+    android:versionName="1.5.4" >
 
     <uses-sdk
         android:minSdkVersion="7"
@@ -31,16 +31,17 @@
         android:theme="@android:style/Theme.Black.NoTitleBar" >
         
         <!-- Main Activity used to show routes list -->
-        <activity
+        <activity android:name=".activities.SplashActivity"
+            android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity><activity
             android:name=".activities.RoutesActivity"
             android:launchMode="singleInstance"
             android:screenOrientation="portrait" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+       </activity>
         
         <!-- Activity to show user settings -->
         <activity
@@ -79,6 +80,8 @@
             android:enabled="true"
             android:exported="false" >
         </provider>
+        <activity android:name=".activities.RoutesListActivity"></activity>
+        
         
     </application>
 
